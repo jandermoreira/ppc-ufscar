@@ -1,0 +1,28 @@
+%! Package = ppc-ufscar
+%! Author = jander
+%! Date = 25/04/2025
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ppc-ufscar}[2025/04/25 Classe para a edição de Projetos Pedagógicos de Curso]
+
+\@ifclassloaded{report}{}{
+    \PackageWarning{ppc-ufscar}{'ppc-ufscar' foi projetado para a classe 'report'}
+    \PackageWarning{ppc-ufscar}{O uso em outras classes pode causar comportamento imprevisível}
+}
+
+\NewDocumentCommand{\PPCVersion}{}{0.1}
+
+\RequirePackage{etoolbox}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[brazilian]{babel}
+
+%
+% Pacotes
+\RequirePackage{textcomp}
+\RequirePackage{xcolor}
+\RequirePackage[all]{nowidow}
+\RequirePackage{array}
+
+
+\sloppy

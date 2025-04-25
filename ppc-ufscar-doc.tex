@@ -6,13 +6,89 @@
 \usepackage[utf8]{inputenc}
 \usepackage[brazilian]{babel}
 
-\usepackage{packdoc}
+\usepackage[presets]{packdoc}
+\usepackage{ppc-ufscar}
+\usepackage{hvlogos}
 
-\title{}
-\author{Jander Moreira}
-\date{\today}
+\title{
+    A classe \PackageName{ppc-ufscar}\\
+    \small V.\PPCVersion\\
+    \url{https://github.com/jandermoreira/ppc-ufscar}
+}
+\author{Jander Moreira\\\footnotesize\texttt{moreira.jander@ufscar.br}}
+\date{}
 
 \begin{document}
 \maketitle
+
+\PDNewVersion{0.1}{2025-04-25}
+\PDAddChange{0.1}{
+    description = Versão inicial.,
+    no page,
+    no box,
+}
+\PDPrintChanges
+
+
+\section{Introdução}
+Esta classe é o resultado do trabalho realizado nas reformulações dos cursos de Bacharelado em Engenharia da Computação e Bacharelado da Ciência da Computação em 2024. Durante a elaboração do documento, um mecanismo mais robusto para ``automatizar'' certas partes da escrita foram necessários.
+
+
+\section{Como usar}
+Para usar a classe, o documento deve especificar \PackageName{ppc-ufscar} em \Macro{documentclass}.
+
+\begin{PDListing}
+    \documentclass{ppc-ufscar}
+\end{PDListing}
+
+A classe é desenvolvida sobre a classe padrão \PackageName{report}. Alternativamente, parte dos recursos podem ser usados em outras classes e devem ser carragados como um pacote.
+
+\begin{PDListing}
+    \documentclass[a4paper, 11pt]{article}  % por exemplo
+    \usepackage{ppc-ufscar}
+\end{PDListing}
+
+Quando carregado como pacote, os ajustes relativos ao leiaute não são usados, como margens e espaçamento de linhas, por exemplo.
+
+A classe será disponibilizada no CTAN\footnote{\url{https://ctan.org}.} quando atingir uma maturidade mínima.
+
+
+\section{Recursos para o PPC}
+
+\subsection{Capa: nome, autoria e data}
+
+\subsection{Especificação da ficha de informações das disciplinas}
+
+Como apresentar uma disciplina.
+
+\subsection{Especificação da grade curricular}
+
+
+\section{Recursos de compilação condicional}
+\index{Overleaf}%
+\index{timeout@\textit{timeout}}%
+Os projetos que usam a classe \PackageName{ppc-ufscar} tendem usar uma quantidade relativamente alta de recursos do \LaTeX\ e também aumentam o tempo de compilação. Em particular, quando usado no Overleaf\footnote{\url{https://www.overleaf.com}.}, é comum que a compilação falhe por \textit{timeout} (reduzido para 20~segundos para as contas grátis em 2024).
+
+
+\section{Descrição de recursos de uso geral}
+
+\begin{Macrodef}{NovoAtributo}{\MArg{classe}\MArg{nome}\MArg{valor}}{}
+
+\end{Macrodef}
+
+\begin{Macrodef}{Atributo}{\MArg{classe}\MArg{nome}}{}
+
+\end{Macrodef}
+
+
+\section{Ainda por fazer}
+Esta é uma \textit{lista de desejos} que podem ou não ser concretizados no furturo:
+
+\begin{itemize}
+    \item Substituição do texto usado nas bibliografias das disciplinas por uma lista de rótulos \BibTeX\ para formatação automática segundo a ABNT.
+    \item Geração de grade de disciplinas com conexões representando pré-requisitos.
+\end{itemize}
+
+\printindex
 
 \end{document}
