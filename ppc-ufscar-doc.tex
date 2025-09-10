@@ -135,15 +135,15 @@ Os itens serão automaticamente incluídos na ficha de descrição.
 A vírgula separando os itens é essencial.
 
 \subsubsection{Detalhamento das informações da apresentação institucional}
-A apresentação-institucional (ou segunda página) é descrita com \MacroRef{PPCDefinaApresentacaoInstitucional}.
+A dados-institucionais (ou segunda página) é descrita com \MacroRef{PPCDefinaDadosInstitucionais}.
 
-\begin{Macrodef}{PPCDefinaApresentacaoInstitucional}{}{}
-    Define o conteúdo da apresentação-institucional.
+\begin{Macrodef}{PPCDefinaDadosInstitucionais}{}{}
+    Define o conteúdo da dados-institucionais.
 \end{Macrodef}
 
 \todo{Corrigir para novo formato}
 \begin{PDListing}
-    \PPCDefinaApresentacaoInstitucional{
+    \PPCDefinaDadosInstitucionais{
         unidade = {\PPCInfo{instituição}},
         pessoa = {Reitora}{Profa. Dra. Fulana de Tal},
         pessoa = {Vice-Reitora}{Profa. Dra. Ciclana de Tal},
@@ -164,7 +164,7 @@ A apresentação-institucional (ou segunda página) é descrita com \MacroRef{PP
     }
 \end{PDListing}
 
-A apresentação da ficha é feita com \MacroRef{PPCApresentacaoInstitucional} e as informações são apresentadas na ordem especificada.
+A apresentação da ficha é feita com \MacroRef{PPCDadosInstitucionais} e as informações são apresentadas na ordem especificada.
 
 Os atributos permitidos são \texttt{unidade} e \texttt{pessoa}. A unidade pode ser a Universidade, o Centro, a Coordenação de Curso ou outro, sendo apresentada em detaque. Cada pessoa é especificada por dois elementos: o cargo e o nome.
 

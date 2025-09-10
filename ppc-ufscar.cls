@@ -25,7 +25,7 @@
 
 \NewDocumentCommand{\PPCPreambulo}{}{
     \PPCCapa
-    \PPCApresentacaoInstitucional
+    \PPCDadosInstitucionais
     \PPCFichaDescritiva
     \clearpage
     \pagenumbering{roman}

@@ -21,12 +21,48 @@
 \RequirePackage{array}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% DESCRIÇÃO DO CURSO
+% SUPORTE GERAL
+
+\ExplSyntaxOn
+
+\msg_new:nnn { ppc-ufscar } { mensagem } { }
+
+% ppc_erro:n: apresenta mensagem de erro
+\cs_new:Npn \ppc_erro:n #1 {
+    \msg_set:nnn { ppc-ufscar } { mensagem } { #1 }
+    \msg_error:nn { ppc-ufscar } { mensagem }
+}
+
+% ppc_aviso:n: apresenta mensagem de erro
+\cs_new:Npn \ppc_aviso:n #1 {
+    \msg_set:nnn { ppc-ufscar } { mensagem } { #1 }
+    \msg_warning:nn { ppc-ufscar } { mensagem }
+}
+
+\ExplSyntaxOff
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FICHA DESCRITIVA
+%
+%     * Lista AT `itens-ficha-descritiva`: contém todos os itens
+%       definidos, exceto ano e local
+%     * Para cada item são criados dois atributos AT usando a classe `curso`:
+%         - <texto chave>: com a descrição
+%         - <chave>: com o valor
+%
+%     Exemplo:
+%         instituição = {Instituição de ensino}{Un. Fed. de S.Carlos}
+%         `instituição` = "Un. Fed. de S.Carlos" (classe `curso`)
+%         `texto instituição` = "Instituição de ensino" (classe `curso`)
+%         `instituição` é adicionada à lista `itens-ficha-descritiva`
+
+\ExplSyntaxOn
 
 % PPCDefinaFichaDescritiva: descrição dos dados sobre o curso
 % #1: lista com os atributos do curso
-\ExplSyntaxOn
 \cs_new:Npn \ppc_separe_texto_conteudo:n #1 {
+    % #1: par {texto-do-item}{valor-do-item}
     \seq_set_split:Nnn \l_local_argumentos_seq { } { #1 }
     \seq_pop_left:NN \l_local_argumentos_seq \l_tmpa_tl
     \ATAttributeSetFrom[curso]{texto~\l_keys_key_str}{\l_tmpa_tl}
@@ -60,22 +96,33 @@
     }%
 }
 
+% PPCInfo: retorna o valor de um atributo do curso
+% #1: nome do atributo
 \NewDocumentCommand{\PPCInfo}{ m }{%
     \ATAttributeGet[curso]{#1}%
 }
 
-% PPCDefinaApresentacaoInstitucional: define como será a apresentação de
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DADOS INSTITUCIONAIS
+%
+%     * Lista AT `dados-institucionais`: contém os dados (`unidade`,
+%       `cargo`, `pessoa`, `nova página`) com os dados indicados.
+%
+%     Não são criados atributos AT.
+
+\ExplSyntaxOn
+
+% PPCDefinaDadosInstitucionais: define como será a apresentação de
 %   dados da instituição
 % #1: lista de separada por vírgulas, na forma chave = valor
 %
 % As chaves podem ser:
-%   unidade:
-%   cargo:
-%   pessoa:
+%   unidade: Universidade, Centro, Instituto, NDE
+%   cargo: Reitora, Coordenador, Secretária
+%   pessoa: seu nome
 %   nova página: insere uma quebra de página
-\ExplSyntaxOn
 \seq_new:N \l_local_argumentos_seq
-\keys_define:nn { lista-descritiva } {
+\keys_define:nn { dados-institucionais } {
     unidade .code:n = {
         \ATListAppendItems{\l_local_current_list_tl}{\bigskip\textsc{\textbf{\large#1}}}
     },
@@ -91,18 +138,26 @@
 }
 \cs_new:Npn \ppc_defina_contra_capa:n #1 {
     \tl_clear_new:N \l_local_current_list_tl
-    \tl_set:Nn \l_local_current_list_tl { apresentação-institucional }
-    \keys_set:nn { lista-descritiva } { #1 }
+    \tl_set:Nn \l_local_current_list_tl { dados-institucionais }
+    \keys_set:nn { dados-institucionais } { #1 }
 }
-\NewDocumentCommand{\PPCDefinaApresentacaoInstitucional}{ > { \TrimSpaces } m }{
-    \ATListCreate{apresentação-institucional}
+\NewDocumentCommand{\PPCDefinaDadosInstitucionais}{ > { \TrimSpaces } m }{
+    \ATListCreate{dados-institucionais}
     \ppc_defina_contra_capa:n { #1 }
 }
 \ExplSyntaxOff
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% DESCRIÇÃO DAS DISCIPLINAS
+% DESCRIÇÃO DAS DISCIPLINAS
+%     Para cada disciplina são criados atributos AT para cada item.
+%     O id da disciplina é usado como classe (e.g. `cap`, `md`).
+%
+%     Exemplo para a disciplina `cap`:
+%         nome = {Construção de algoritmos e programação}
+%         `nome` = "Construção de algoritmos e programação" (classe `cap`)
+%
+%     Não são criadas listas de disciplinas.
 
 % PPCDefinaDisciplina: define uma disciplina
 % #1: nome de referência ("apelido"); e.g. es1 para Engenharia de Software 1
@@ -127,29 +182,129 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% DESCRIÇÃO DA MATRIZ CURRICULAR
+% MATRIZ CURRICULAR
+%
+%     * Cada matriz define:
+%         - Variável `{ g_ppc_ <nome da matriz> _numero_periodos_int }`
+%             com o número de períodos
+%         - Variável `{ g_ppc_ <nome da matriz> _nome_periodo_tl }` com
+%             o nome do período (e.g. ano, semestre)
+%         - Lista AT `<nome da matriz>-periodo-<número do período>` vazia
+%             a ser preenchida à medida que os períodos de cada área
+%             são definidos
+%
+%     Se <nome da matriz> é omitido na definição, `matriz-principal` é o
+%     valor padrão.
+%
+%     * Cada área da matriz define:
+%         - Atributo AT `nome` na classe `<nome da matriz>-<id da área>`
+%           com o nome da área
+%         - Listas AT `<nome da matriz>-periodo-<numero do período>`
+%           preenchida com os ids das disciplinas de cada período
+%         - Listas AT `<nome da matriz>-<id da área>-<numero do período>`
+%           com os ids das disciplinas de cada período separada por área
 
 \ExplSyntaxOn
-\keys_define:nn { matriz } {
-    unknown .code:n = {
-        \ATAttributeSet{\l_ppc_disciplina_corrente_tl}{\l_keys_key_str}{#1}
+
+% PPCDefinaMatrizCurricular: define o conteúdo da matriz curricular
+% #1 (opcional): nome da matriz, caso haja mais que uma
+% #2: lista separada com vírgulas com a descrição da matriz (chave = valor)
+\keys_define:nn { matriz-curricular } {
+    nome~período .code:n = {
+        \tl_clear_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _nome_periodo_tl }
+        \tl_set:cn { g_ppc_ \l_ppc_matriz_corrente_tl _nome_periodo_tl } { #1 }
     },
+    número~períodos .code:n = {
+        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
+        \int_set:cn { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int } { #1 }
+        \int_set:Nn \l_tmpa_int { 0 }  % contador
+        \int_while_do:nNnn { \l_tmpa_int } { < } { #1 } {
+            \int_add:Nn \l_tmpa_int { 1 }
+            \ATListCreate{
+                \l_ppc_matriz_corrente_tl -periodo- \int_use:N \l_tmpa_int
+            }
+        }
+    },
+    área .code:n = {
+        \ppc_defina_area_matriz:n { #1 }
+    }
+}
+\cs_new:Npn \ppc_defina_matriz_curricular:nn #1#2 {
+    \tl_clear_new:N \l_ppc_matriz_corrente_tl
+    \tl_set:Nn \l_ppc_matriz_corrente_tl { #1 }
+    \keys_set:nn { matriz-curricular } { #2 }
+}
+\NewDocumentCommand{\PPCDefinaMatrizCurricular}{ O{matriz-principal} > { \TrimSpaces } m }{
+    \ppc_defina_matriz_curricular:nn { #1 } { #2 }
 }
 
-\NewDocumentCommand{\PPCDefinaMatrizCurricular}{ O{} > { \TrimSpaces } m }{
+% ppc_defina_disciplinas_periodo:nn: registra as disciplinas do período
+\cs_generate_variant:Nn \seq_set_split:Nnn { cnn }
+\cs_new:Npn \ppc_defina_disciplinas_periodo:nn #1#2 {
+    % #1: número do período
+    % #2: lista separada por vírgulas de disciplinas do período
+    \exp_args:NNc \int_set:Nn \l_tmpa_int { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
+    \int_compare:nNnTF { #1 } { < } { 0 } {
+        \ppc_erro:n { Período~deve~ser~numérico~(#1). }
+    } {
+        \int_compare:nNnTF { #1 } { > } { \l_tmpa_int } {
+            \ppc_erro:n { Período~máximo~é~\int_use:N \l_tmpa_int. }
+        } {
+            \ATListAppendItems{\l_ppc_matriz_corrente_tl -periodo-#1}{#2}
+            \ATListAppendItems{\l_ppc_matriz_corrente_tl - \l_ppc_area_tl -#1}{#2}
+        }
+    }
 }
+
+
+% ppc_defina_area_matriz:n: define uma área para a matriz curricular
+\keys_define:nn { área-matriz } {
+    nome .code:n = {
+        \ATAttributeSet[\l_ppc_matriz_corrente_tl-\l_ppc_area_tl]{nome}{#1}
+        \int_set:Nn \l_tmpa_int { 0 }  % contador
+        \exp_args:NNc \int_set:Nn \l_tmpb_int { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int } % número de períodos
+        \int_while_do:nNnn { \l_tmpa_int } { < } { \l_tmpb_int } {
+            \int_add:Nn \l_tmpa_int { 1 }
+            \ATListCreate{
+                \l_ppc_matriz_corrente_tl - \l_ppc_area_tl - \int_use:N \l_tmpa_int
+            }
+        }
+    },
+    unknown .code:n = {  % unknown: \l_keys_key_str é o período
+        \ppc_defina_disciplinas_periodo:nn { \l_keys_key_str } { #1 }
+    },
+}
+\cs_new:Npn \ppc_defina_area_matriz:n #1 {
+    % #1: par {id-da-área}{descrição-da-área}
+    \seq_set_split:Nnn \l_local_argumentos_seq { } { #1 }
+    \tl_clear_new:N \l_ppc_area_tl
+    \seq_pop_left:NN \l_local_argumentos_seq \l_ppc_area_tl
+    \seq_pop_left:NN \l_local_argumentos_seq \l_tmpa_tl
+    \exp_args:NnV \keys_set:nn { área-matriz } \l_tmpa_tl
+}
+
 \ExplSyntaxOff
+
+% PPCArea: retorna o valor de um atributo de uma área
+% #1 (opcional): nome da matriz
+% #2: id da área
+% #3: atributo
+\NewDocumentCommand{\PPCArea}{ O {matriz-principal} m m }{%
+    \ATAttributeGet[#1-#2]{#3}%
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% OUTROS AJUSTES
 
+% Modifica a aparência de apresentação do título do capítulo
 \titleformat{\chapter}{\normalfont\bfseries\Large}{\thechapter}{1em}{\Large}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% APRESENTAÇÃO DE INFORMAÇÕES
 
+% PPCCapa: gera a página de capa
 \NewDocumentCommand{\PPCCapa}{}{
     \pagestyle{empty}
     \begin{center}
@@ -170,25 +325,25 @@
     \setcounter{page}{0}
 }
 
-\NewDocumentCommand{\PPCApresentacaoInstitucional}{}{
+% PPCDadosInstitucionais: gera a apresentação da instituição,
+%   suas unidades e pessoas
+\NewDocumentCommand{\PPCDadosInstitucionais}{}{
     \pagestyle{empty}
     \begingroup
     \singlespacing
-% \null\vfill
     \begin{center}
-        \ATListForEach{apresentação-institucional}{\Item}{\Item\par}
+        \ATListForEach{dados-institucionais}{\Item}{\Item\par}
     \end{center}
-% \vfill\null
     \endgroup
     \clearpage
     \setcounter{page}{1}
-    \ATListCreate{apresentação-institucional}  % limpa para salvar memória
+    \ATListCreate{dados-institucionais}  % limpa para salvar memória
 }
 
+% PPCFichaDescritiva: apresenta a ficha descritiva
 \NewDocumentCommand{\PPCFichaDescritiva}{}{
     \pagestyle{empty}
     \begingroup
-% \singlespacing
     \begin{center}
         \large
         \textbf{Ficha Descritiva do Curso}
@@ -211,6 +366,5 @@
     \endgroup
     \clearpage
     \setcounter{page}{1}
-    \ATListCreate{apresentação-institucional}  % salva memória
+    \ATListCreate{dados-institucionais}  % salva memória
 }
-
