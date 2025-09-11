@@ -29,15 +29,34 @@
 
 % ppc_erro:n: apresenta mensagem de erro
 \cs_new:Npn \ppc_erro:n #1 {
+    % #1: mensagem a ser colocada no log
     \msg_set:nnn { ppc-ufscar } { mensagem } { #1 }
     \msg_error:nn { ppc-ufscar } { mensagem }
 }
 
 % ppc_aviso:n: apresenta mensagem de erro
 \cs_new:Npn \ppc_aviso:n #1 {
+    % #1: mensagem a ser colocada no log
     \msg_set:nnn { ppc-ufscar } { mensagem } { #1 }
     \msg_warning:nn { ppc-ufscar } { mensagem }
 }
+
+% ppc_se_periodo_valido:nnTF: executa código se um valor estiver no intervalo
+\cs_new:Npn \ppc_se_periodo_valido:nnT #1#2#3 {
+    % #1: valor inteiro a ser verificado
+    % #2: limite superior
+    % #3: código se estiver 1 <= #1 <= #2
+    \int_compare:nNnTF { #1 } { < } { 0 } {
+        \ppc_erro:n { Período~fora~do~intervalo~válido (1 a #2). }
+    } {
+        \int_compare:nNnTF { #1 } { > } { #2 } {
+            \ppc_erro:n { Período~fora~do~intervalo~válido (1 a #2). }
+        } {
+            #3
+        }
+    }
+}
+% \cs_generate_variant:nn \ppc_se_periodo_valido:nnT { ncT }
 
 \ExplSyntaxOff
 
@@ -189,9 +208,13 @@
 %             com o número de períodos
 %         - Variável `{ g_ppc_ <nome da matriz> _nome_periodo_tl }` com
 %             o nome do período (e.g. ano, semestre)
+%         - Listas AT `<nome da matriz>-carga-optativas-<número do período>`
+%             vazias a serem preenchidas com a carga horária de cada optativa
+%             planejada
+%         - Variáveis `{ g_ppc_ <nome da matriz> _carga_a_compensar_ <nº período> _int }
+%             com a carga de horas a compensar (subtrair) para cada período
 %         - Lista AT `<nome da matriz>-periodo-<número do período>` vazia
-%             a ser preenchida à medida que os períodos de cada área
-%             são definidos
+%             a ser preenchida com a lista de disciplinas do período.
 %
 %     Se <nome da matriz> é omitido na definição, `matriz-principal` é o
 %     valor padrão.
@@ -217,17 +240,34 @@
     número~períodos .code:n = {
         \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
         \int_set:cn { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int } { #1 }
+        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_obrigatoria_int }
+        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_optativa_int }
+        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_estagio_int }
+        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_extensionista_int }
+        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_tcc_int }
         \int_set:Nn \l_tmpa_int { 0 }  % contador
         \int_while_do:nNnn { \l_tmpa_int } { < } { #1 } {
             \int_add:Nn \l_tmpa_int { 1 }
             \ATListCreate{
                 \l_ppc_matriz_corrente_tl -periodo- \int_use:N \l_tmpa_int
             }
+            \ATListCreate{
+                \l_ppc_matriz_corrente_tl -carga-optativas- \int_use:N \l_tmpa_int
+            }
+            \int_zero_new:c {
+                g_ppc_ \l_ppc_matriz_corrente_tl _carga_a_compensar_ \int_use:N \l_tmpa_int _int
+            }
         }
     },
     área .code:n = {
         \ppc_defina_area_matriz:n { #1 }
-    }
+    },
+    carga~optativas .code:n = {
+        \ppc_defina_carga_optativas:n { #1 }
+    },
+    carga~a~compensar .code = {
+        \ppc_defina_carga_a_compensar:n { #1 }
+    },
 }
 \cs_new:Npn \ppc_defina_matriz_curricular:nn #1#2 {
     \tl_clear_new:N \l_ppc_matriz_corrente_tl
@@ -238,24 +278,38 @@
     \ppc_defina_matriz_curricular:nn { #1 } { #2 }
 }
 
-% ppc_defina_disciplinas_periodo:nn: registra as disciplinas do período
-\cs_generate_variant:Nn \seq_set_split:Nnn { cnn }
-\cs_new:Npn \ppc_defina_disciplinas_periodo:nn #1#2 {
-    % #1: número do período
-    % #2: lista separada por vírgulas de disciplinas do período
-    \exp_args:NNc \int_set:Nn \l_tmpa_int { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
-    \int_compare:nNnTF { #1 } { < } { 0 } {
-        \ppc_erro:n { Período~deve~ser~numérico~(#1). }
-    } {
-        \int_compare:nNnTF { #1 } { > } { \l_tmpa_int } {
-            \ppc_erro:n { Período~máximo~é~\int_use:N \l_tmpa_int. }
-        } {
-            \ATListAppendItems{\l_ppc_matriz_corrente_tl -periodo-#1}{#2}
-            \ATListAppendItems{\l_ppc_matriz_corrente_tl - \l_ppc_area_tl -#1}{#2}
+% ppc_caso_carater:nnnnn: processa disciplina conforme seu caráter
+% vazio = obrigatória; * = opcional; : = estágio; @ = extensionista
+\cs_new:Npn \ppc_caso_carater:nnnnnn #1#2#3#4#5#6 {
+    % #1: id da disciplina com possível modificador
+    % #2: ação se for obrigatória
+    % #3: ação se for optativa (prefixo o:)
+    % #4: ação se for estágio (prefixo e:)
+    % #5: ação se for extensionista (prefixo x:)
+    % #6: ação se for tcc (prefixo t:)
+    %
+    % Define \l_ppc_disciplina_tl com o id da disciplina (sem prefixo)
+    \tl_clear_new:N \l_ppc_prefixo_tl
+    \tl_set:Ne \l_ppc_prefixo_tl { \tl_head:n { #1 } }
+    \tl_clear_new:N \l_ppc_dois_pontos_tl
+    \tl_set:Ne \l_ppc_dois_pontos_tl { \exp_args:Ne \tl_head:n { \tl_tail:n { #1 } } }
+    \tl_clear_new:N \l_ppc_disciplina_tl
+    \tl_set:Ne \l_ppc_disciplina_tl { \exp_args:Ne \tl_tail:n { \tl_tail:n { #1 } } }
+    \str_if_eq:eeTF { \l_ppc_dois_pontos_tl } { : } {
+        \str_if_eq:eeTF { \l_ppc_prefixo_tl } { o } { #3 } {
+            \str_if_eq:eeTF { \l_ppc_prefixo_tl } { e } { #4 } {
+                \str_if_eq:eeTF { \l_ppc_prefixo_tl } { x } { #5 } {
+                    \str_if_eq:eeTF { \l_ppc_prefixo_tl } { t } { #6 } {
+                        \ppc_erro:n { Caráter~inválido:~'\tl_use:N \l_ppc_prefixo_tl'.~(#1). }
+                    }
+                }
+            }
         }
+    } {
+        \tl_set:Nn \l_ppc_disciplina_tl { #1 }
+        #2
     }
 }
-
 
 % ppc_defina_area_matriz:n: define uma área para a matriz curricular
 \keys_define:nn { área-matriz } {
@@ -281,6 +335,83 @@
     \seq_pop_left:NN \l_local_argumentos_seq \l_ppc_area_tl
     \seq_pop_left:NN \l_local_argumentos_seq \l_tmpa_tl
     \exp_args:NnV \keys_set:nn { área-matriz } \l_tmpa_tl
+}
+
+% ppc_defina_disciplinas_periodo:nn: registra as disciplinas do período
+\cs_generate_variant:Nn \seq_set_split:Nnn { cnn }
+\cs_new:Npn \ppc_defina_disciplinas_periodo:nn #1#2 {
+    % #1: número do período
+    % #2: lista separada por vírgulas de disciplinas do período
+    \ppc_se_periodo_valido:nnT { #1 } {
+        \int_use:c { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
+    } {  % construção da matriz curricular
+        \seq_clear_new:N \l_ppc_lista_disciplinas_seq
+        \seq_set_split:Nnn \l_ppc_lista_disciplinas_seq { , } { #2 }
+        \seq_map_inline:Nn \l_ppc_lista_disciplinas_seq {
+            \ppc_caso_carater:nnnnnn { ##1 } {  % obrigatório
+                \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{natureza = Obrigatória}
+            } {  % optativo
+                \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{natureza = Optativa}
+            } {  % estágio
+                \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{natureza = Obrigatória}
+                \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{}
+            } {  % extensionista
+                \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{natureza = Extensionista}
+            } {
+                \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{natureza = Obrigatória}
+                \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{}
+            }
+            \ATListAppendItemsFrom{\l_ppc_matriz_corrente_tl-periodo-#1}{\l_ppc_disciplina_tl}
+            \ATListAppendItemsFrom{\l_ppc_matriz_corrente_tl - \l_ppc_area_tl -#1}{\l_ppc_disciplina_tl}
+        }
+    }
+}
+
+% ppc_defina_optativas_periodo:nn: defina quais as cargas de optativas para
+%   um período específico
+\cs_new:Npn \ppc_defina_optativas_periodo:nn #1#2 {
+    % #1: número do período
+    % #2: lista separada por vírgulas de cargas horárias
+    \ppc_se_periodo_valido:nnT { #1 } {
+        \int_use:c { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
+    } {
+        \ATListAppendItems{\l_ppc_matriz_corrente_tl -carga-optativas-#1}{#2}
+    }
+}
+
+% ppc_defina_carga_optativas:n: determina a carga e quantidade esperada
+%   de optativas em cada período
+\keys_define:nn { carga-optativas } {
+    unknown .code:n = {  % unknown: \l_keys_key_str é o período
+        \ppc_defina_optativas_periodo:nn { \l_keys_key_str } { #1 }
+    },
+}
+\cs_new:Npn \ppc_defina_carga_optativas:n #1 {
+    \keys_set:nn { carga-optativas } { #1 }
+}
+
+% ppc_defina_carga_a_compensar_periodo:nn: defina quais as cargas de optativas para
+%   um período específico
+\cs_new:Npn \ppc_defina_carga_a_compensar_periodo:nn #1#2 {
+    % #1: número do período
+    % #2: valor de horas para compensar
+    \ppc_se_periodo_valido:nnT { #1 } {
+        \int_use:c { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
+    } {
+        \int_set:cn {
+            g_ppc_ \l_ppc_matriz_corrente_tl _carga_a_compensar_ #1 _int
+        } { #2 }
+    }
+}
+
+% ppc_defina_carga_a_compensar:n
+\keys_define:nn { carga-a-compensar } {
+    unknown .code:n = {  % unknown: \l_keys_key_str é o período
+        \ppc_defina_carga_a_compensar_periodo:nn { \l_keys_key_str } { #1 }
+    },
+}
+\cs_new:Npn \ppc_defina_carga_a_compensar:n #1 {
+    \keys_set:nn { carga-a-compensar } { #1 }
 }
 
 \ExplSyntaxOff
@@ -368,3 +499,20 @@
     \setcounter{page}{1}
     \ATListCreate{dados-institucionais}  % salva memória
 }
+
+
+%%%
+\endinput
+
+Contagem de horas, separando teóricas, práticas, extensão e estágio:
+    - Obrigatórias
+    - Optativas
+    - Extensionistas
+    - Estágio
+    - Total
+
+Listas:
+    - Lista de id de disciplina total
+    - Lista de id de disciplina por área
+
+ODS?

@@ -8,6 +8,7 @@
     campus = {Campus}{São Carlos},
     centro = {Centro}{Centro de Ciências Aleatórias},
     curso = {Nome do curso}{Bacharelado em Alguma Coisa},
+    sigla = {Sigla do curso}{AC},
     modalidade = {Modalidade}{Presencial/Híbrido},
     vagas = {Quantidade de vagas}{60 vagas anuais},
     turno = {Turno}{Integral},
@@ -65,7 +66,7 @@
     astro-fic-ext, psico-fic, hist-alter, quim-fic-ext,
     tec-fic-avanc, nano-art, arqueo-fic-ext,
     eco-fic-avanc, med-fic-ext2, robot-fic-avanc, tec-fic-ext,
-    astro-fic, hist-alt-avanc
+    astro-fic, hist-alt-avanc, tcc,
 }
 
 \PPCDefinaMatrizCurricular{
@@ -74,12 +75,12 @@
     área = {nat-bio}{
         nome = {Fundamentos de Ciências Naturais e Biológicas Fantásticas},
         1 = {astro-fic, bio-sint},
-        2 = {eco-fic-avanc, eco-fic-ext},
+        2 = {o:eco-fic-avanc, eco-fic-ext},
         3 = {quim-fic},
-        4 = {eco-fic, genet-fic},
-        5 = {med-fic-ext2, med-fic-ext},
-        6 = {med-fic, quim-fic-ext},
-        8 = {astro-fic-avanc, astro-fic-ext},
+        4 = {eco-fic, x:genet-fic},
+        5 = {med-fic-ext2, x:med-fic-ext},
+        6 = {med-fic, o:quim-fic-ext},
+        8 = {e:astro-fic-avanc, x:astro-fic-ext},
     },
     área = {hum-soc}{
         nome = {Fundamentos de Ciências Humanas e Sociais Fantásticas},
@@ -87,8 +88,8 @@
         2 = {arqueo-fic, filo-cien},
         3 = {filo-fic, geo-fic-ext},
         4 = {geo-fic, hist-alt-avanc},
-        5 = {hist-alter, hist-alt-ext},
-        6 = {ling-fic-ext, ling-fic},
+        5 = {hist-alter, o:hist-alt-ext},
+        6 = {e:ling-fic-ext, x:ling-fic},
         7 = {lingua-fic, psico-fic-avanc},
         8 = {psico-fic},
     },
@@ -99,9 +100,17 @@
     },
     área = {tec-eng}{
         nome = {Fundamentos de Tecnologias e Engenharia Fantásticas},
-        3 = {robot-fic-avanc, robot-fic},
+        3 = {x:robot-fic-avanc, o:robot-fic},
         6 = {tec-espec, tec-fic-avanc},
-        7 = {tec-fic-ext, tec-fic},
+        7 = {tec-fic-ext, tec-fic, t:tcc},
+    },
+    carga optativas = {
+        4 = {60, 60, 90},
+        7 = {30, 60, 60, 60},
+    },
+    carga a compensar = {
+        3 = 30,
+        8 = 360,
     }
 }
 
@@ -113,37 +122,58 @@
 \begin{document}
 
 
-\chapter{Introdução}
+\chapter{Lista de disciplinas}
 
-% \begin{itemize}
-%     \ATForEach{\Disc}{    astro-fic-avanc, hist-alt-ext, ling-fic, tec-fic,
-%         bio-sint, antrop-fic,
-%         geo-fic, med-fic-ext, robot-fic, eco-fic, mus-fic-avanc,
-%         arqueo-fic, psico-fic-avanc, quim-fic, tec-espec,
-%         mus-fic, filo-fic,
-%         lingua-fic, art-fic, med-fic, eco-fic-ext, geo-fic-ext,
-%         astro-fic-ext, psico-fic, hist-alter, quim-fic-ext,
-%         tec-fic-avanc, nano-art, arqueo-fic-ext,
-%         eco-fic-avanc, med-fic-ext2, robot-fic-avanc, tec-fic-ext,
-%         astro-fic, hist-alt-avanc
-%     }{\item \textsc{\Disc}: \PPCDisciplina{\Disc}{nome}\par}
-% \end{itemize}
+\subsubsection*{Lista geral}
+\begin{itemize}
+    \ATForEach{\Disc}{astro-fic-avanc, hist-alt-ext, ling-fic, tec-fic,
+        bio-sint, antrop-fic,
+        geo-fic, med-fic-ext, robot-fic, eco-fic, mus-fic-avanc,
+        arqueo-fic, psico-fic-avanc, quim-fic, tec-espec,
+        mus-fic, filo-fic,
+        lingua-fic, art-fic, med-fic, eco-fic-ext, geo-fic-ext,
+        astro-fic-ext, psico-fic, hist-alter, quim-fic-ext,
+        tec-fic-avanc, nano-art, arqueo-fic-ext,
+        eco-fic-avanc, med-fic-ext2, robot-fic-avanc, tec-fic-ext,
+        astro-fic, hist-alt-avanc
+    }{
+        \item \textsc{\Disc}: \PPCDisciplina{\Disc}{nome} \ATAttributeIfExist[\Disc]{caráter}{(\PPCDisciplina{\Disc}{caráter})}{***}\par
+    }
+\end{itemize}
 
-% \begin{itemize}
-%     \ATForEach{\Area}{nat-bio, hum-soc, art-ling, tec-eng}{\item \textsc{\Area}: \PPCArea{\Area}{nome}\par}
-% \end{itemize}
-
-
-
-\lipsum[1]
-
-
-\chapter{Memorial Descritivo}
-\lipsum[3]
+\subsubsection*{Lista por períodos}
 
 \ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
-    \p --
+    \noindent\p --
     \ATListForEach{matriz-principal-periodo-\p}{\v}[{ e }{, }{ e }{}]{\v}\par
 }
+
+
+\chapter{Lista de disciplinas por área}
+
+\ATForEach{\Area}{nat-bio, hum-soc, art-ling, tec-eng}{
+    \subsubsection*{\Area: \PPCArea{\Area}{nome}}
+    \ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+        \noindent\p --~\ATListForEach{matriz-principal-\Area-\p}{\Disc}[{ e }{, }{ e }{}]{\Disc}\par
+    }
+}
+
+
+\chapter{Carga de optativas}
+
+\ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+    \noindent\p --
+    \ATListForEach{matriz-principal-carga-optativas-\p}{\v}[{ e }{, }{ e }{}]{\v}\par
+}
+
+
+\chapter{Carga horária para compensação}
+
+\ExplSyntaxOn
+\ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+    \noindent\p~--~
+    \int_use:c {g_ppc_matriz-principal_carga_a_compensar_ \p _int}~horas\par
+}
+\ExplSyntaxOff
+
 \end{document}
-matriz-principal-art-ling-1
