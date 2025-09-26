@@ -8,6 +8,7 @@
 
 \usepackage[presets]{packdoc}
 \PDSetElement{Macro}{index remark = {}, no group index}
+\PDSetElement{Option}{index remark = {}, no group index}
 \usepackage{ppc-ufscar}
 \usepackage{hvlogos}
 \usepackage{todonotes}
@@ -135,7 +136,7 @@ Os itens serão automaticamente incluídos na ficha de descrição.
 A vírgula separando os itens é essencial.
 
 \subsubsection{Detalhamento das informações da apresentação institucional}
-A dados-institucionais (ou segunda página) é descrita com \MacroRef{PPCDefinaDadosInstitucionais}.
+A dados institucionais (ou segunda página) é descrita com \MacroRef{PPCDefinaDadosInstitucionais}.
 
 \begin{Macrodef}{PPCDefinaDadosInstitucionais}{}{}
     Define o conteúdo da dados-institucionais.
@@ -211,6 +212,38 @@ Os projetos que usam a classe \PackageName{ppc-ufscar} tendem usar uma quantidad
 
 Os diversos atributos podem ser, ainda, manipulados conforme descrito no pacote \PackageName{attrtoolbox}.
 
+
+\section{Opções}
+Uma série de opções de configuração estão disponíveis e podem ser definidas pelo comando \MacroRef{PPCConfig}.
+
+\begin{Macrodef}{PPCConfig}{\MArg{lista-de-opções}}{}
+    O comando \Macro{PPCConfig} aceita uma \Argument{lista-de-opções} separadas por vírgulas. As opções são descritas ao longo desta seção.
+\end{Macrodef}
+
+\subsection{Para a classe \PDInline{ppc-ufscar}}
+Quando o documento é criado usando a classe \PDInline{ppc-ufscar} (com \Macro{documentclass}\PArg{ppc-ufscar}), as folhas de capa, dos dados institucionais e da ficha descritiva são automaticamente criados.
+
+Caso seja necessário suprimir alguma delas, as opções \OptionRef{sem capa}, \OptionRef{sem dados institucionais} e \OptionRef{sem ficha descritiva} podem ser usadas.
+
+\begin{Optiondef}{sem~capa}{}{}
+    Esta opção suprime a criação automática da capa do documento. A capa pode ser gerada manualmente pelo comando \MacroDef{PPCCapa}.
+\end{Optiondef}
+
+\begin{Optiondef}{sem~dados~institucionais}{}{}
+    Esta opção suprime a criação automática da relação de dados institucionais. A relação pode ser gerada manualmente pelo comando \MacroDef{PPCDadosInstitucionais}.
+\end{Optiondef}
+
+\begin{Optiondef}{sem~ficha~descritiva}{}{}
+    Esta opção suprime a criação automática da ficha descritiva do curso. A ficha pode ser gerada manualmente pelo comando \MacroDef{PPCFichaDescritiva}.
+\end{Optiondef}
+
+\begin{PDExample}
+    \PPCConfig{
+        sem capa,  % omite a capa
+        sem ficha descritiva,  % omite a ficha descritiva
+    }
+    % a relação dos dados institucionais não é suprimida!
+\end{PDExample}
 
 \section{Ainda por fazer}
 Esta é uma \textit{lista de desejos} que podem ou não ser concretizados no futuro:

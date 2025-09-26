@@ -23,10 +23,11 @@
 % Funcionalidades
 \RequirePackage{ppc-ufscar}
 
+\ExplSyntaxOn
 \NewDocumentCommand{\PPCPreambulo}{}{
-    \PPCCapa
-    \PPCDadosInstitucionais
-    \PPCFichaDescritiva
+    \bool_if:NTF \g_ppc_apresenta_capa_bool { \PPCCapa } { }
+    \bool_if:NTF \g_ppc_apresenta_dados_institucionais_bool { \PPCDadosInstitucionais } { }
+    \bool_if:NTF \g_ppc_apresenta_ficha_descritiva_bool { \PPCFichaDescritiva } { }
     \clearpage
     \pagenumbering{roman}
     \setcounter{page}{1}
@@ -35,6 +36,7 @@
     \pagenumbering{arabic}
     \setcounter{page}{1}
 }
+\ExplSyntaxOff
 
 %
 \AtBeginDocument{
