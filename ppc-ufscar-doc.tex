@@ -189,6 +189,15 @@ A vírgula separando os itens é essencial.
 
 \subsection{Especificação da grade curricular}
 
+\begin{itemize}
+    \item número períodos
+    \item nome período
+    \item área
+    \item optativas
+    \item a descartar
+    \item eletivas
+\end{itemize}
+
 
 \section{Recursos de compilação condicional}
 \index{Overleaf}%
@@ -207,10 +216,20 @@ Os projetos que usam a classe \PackageName{ppc-ufscar} tendem usar uma quantidad
         centro = {Centro de Ciências Exotéricas},
         ano = {2025},
     }
-    O curso pertence ao \PPCInfo{centro} e foi concluído em \PPCInfo{ano}.
+    O curso pertence ao \PPCInfo{centro} e foi criado em em \PPCInfo{ano}.
 \end{PDExample}
 
 Os diversos atributos podem ser, ainda, manipulados conforme descrito no pacote \PackageName{attrtoolbox}.
+
+\Macro{PPCCargaHoraria}
+\begin{itemize}
+    \item total
+    \item obrigatória
+    \item obrigatória $n$
+    \item optativa
+    \item optativa $n$
+    \item eletiva
+\end{itemize}
 
 
 \section{Opções}
@@ -223,24 +242,24 @@ Uma série de opções de configuração estão disponíveis e podem ser definid
 \subsection{Para a classe \PDInline{ppc-ufscar}}
 Quando o documento é criado usando a classe \PDInline{ppc-ufscar} (com \Macro{documentclass}\PArg{ppc-ufscar}), as folhas de capa, dos dados institucionais e da ficha descritiva são automaticamente criados.
 
-Caso seja necessário suprimir alguma delas, as opções \OptionRef{sem capa}, \OptionRef{sem dados institucionais} e \OptionRef{sem ficha descritiva} podem ser usadas.
+Caso seja necessário suprimir alguma delas, as opções \OptionRef{capa}, \OptionRef{dados institucionais} e \OptionRef{ficha descritiva} podem ser usadas.
 
-\begin{Optiondef}{sem~capa}{}{}
-    Esta opção suprime a criação automática da capa do documento. A capa pode ser gerada manualmente pelo comando \MacroDef{PPCCapa}.
+\begin{Optiondef}{capa}{}{}
+    Esta opção permite suprimir a criação automática da capa do documento. A capa pode ser gerada manualmente pelo comando \MacroDef{PPCCapa}.
 \end{Optiondef}
 
-\begin{Optiondef}{sem~dados~institucionais}{}{}
-    Esta opção suprime a criação automática da relação de dados institucionais. A relação pode ser gerada manualmente pelo comando \MacroDef{PPCDadosInstitucionais}.
+\begin{Optiondef}{dados~institucionais}{}{}
+    Esta opção permite suprimir a criação automática da relação de dados institucionais. A relação pode ser gerada manualmente pelo comando \MacroDef{PPCDadosInstitucionais}.
 \end{Optiondef}
 
-\begin{Optiondef}{sem~ficha~descritiva}{}{}
-    Esta opção suprime a criação automática da ficha descritiva do curso. A ficha pode ser gerada manualmente pelo comando \MacroDef{PPCFichaDescritiva}.
+\begin{Optiondef}{ficha~descritiva}{}{}
+    Esta opção permite suprimir a criação automática da ficha descritiva do curso. A ficha pode ser gerada manualmente pelo comando \MacroDef{PPCFichaDescritiva}.
 \end{Optiondef}
 
 \begin{PDExample}
     \PPCConfig{
-        sem capa,  % omite a capa
-        sem ficha descritiva,  % omite a ficha descritiva
+        capa = false,  % omite a capa (padrão é 'true')
+        ficha descritiva,  % equivale a 'ficha presença = true' (padrão)
     }
     % a relação dos dados institucionais não é suprimida!
 \end{PDExample}

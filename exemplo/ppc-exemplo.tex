@@ -124,6 +124,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
+Centro: \PPCInfo{centro}
+
 
 \chapter{Ficha descritiva}
 
@@ -202,6 +204,23 @@ Total disponível em eletivas: \PPCCargaHoraria{eletiva}h.
         \item Total optativa: \PPCCargaHoraria{optativa \p}h.
         \item[+] Total do período: \PPCCargaHoraria{total \p}h.
     \end{itemize}
+}
+
+\section{Disciplinas}
+
+\ATForEach{\Id}{
+    astro-fic, hist-alt-ext, ling-fic, tec-fic,
+    bio-sint, antrop-fic,
+    geo-fic, med-fic-ext, robot-fic, eco-fic, mus-fic-avanc,
+    arqueo-fic, psico-fic-avanc, quim-fic, tec-espec,
+    mus-fic, filo-fic,
+    lingua-fic, art-fic, med-fic, eco-fic-ext, geo-fic-ext,
+    astro-fic-ext, psico-fic, hist-alter, quim-fic-ext,
+    tec-fic-avanc, nano-art, arqueo-fic-ext,
+    eco-fic-avanc, med-fic-ext2, robot-fic-avanc, tec-fic-ext,
+    astro-fic-avanc, hist-alt-avanc, tcc
+}{
+    \PPCFichaDisciplina{\Id}\clearpage
 }
 
 \end{document}

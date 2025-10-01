@@ -199,14 +199,14 @@
 %     Não são criadas listas de disciplinas.
 
 % PPCDefinaDisciplina: define uma disciplina
-% #1: nome de referência ("apelido"); e.g. es1 para Engenharia de Software 1
+% #1: id da disciplina; e.g. es1 para Engenharia de Software 1
 % #2: lista separada por vírgulas com atributos e seus valores (atributo = {valor})
 \NewDocumentCommand{\PPCDefinaDisciplina}{ m >{ \TrimSpaces } m }{%
     \ATClassSet{#1}{#2}%
 }
 
 % PPCDisciplina: expande para o valor de um dado atributo de uma disciplina
-% #1: nome de referência ("apelido"); e.g. es1 para Engenharia de Software 1
+% #1: id da disciplina; e.g. es1 para Engenharia de Software 1
 % #2: nome do atributo
 \NewDocumentCommand{\PPCDisciplina}{ m m }{%
     \ATAttributeGet[#1]{#2}%
@@ -239,7 +239,7 @@
 }
 
 \cs_new:Npn \ppc_obtenha_carga_disciplina:Nn #1#2 {
-% hack: acesso direto à variável interna AT da disciplina
+    % hack: acesso direto à variável interna AT da disciplina
     \int_set:Nn #1 {
         \tl_use:c { g_at_ #2 _ horas~teóricas _tl } +
         \tl_use:c { g_at_ #2 _ horas~práticas _tl } +
@@ -473,6 +473,7 @@
         \seq_map_inline:Nn \l_lista_horas_seq {
             \ppc_some_carga_horaria:nn { optativa } { ##1 }
             \ppc_some_carga_horaria:nn { optativa~#1 } { ##1 }
+            \ppc_some_carga_horaria:nn { total~#1 } { ##1 }
         }
     }
 }
@@ -580,7 +581,7 @@
     \endgroup
     \clearpage
     \setcounter{page}{1}
-    \ATListCreate{dados-institucionais}  % limpa para salvar memória
+% \ATListCreate{dados-institucionais}  % limpa para salvar memória
 }
 
 % PPCFichaDescritiva: apresenta a ficha descritiva
@@ -611,6 +612,37 @@
     \setcounter{page}{1}
     \ATListCreate{dados-institucionais}  % salva memória
 }
+
+% PPCFichaDisciplina: apresenta a descrição da disciplina
+% #1: id da disciplina
+\NewDocumentCommand{\PPCFichaDisciplina}{ m }{
+    \begingroup
+    \singlespacing
+    \begin{tabular}{>{\bfseries\raggedright}p{0.25\linewidth}<{:}p{0.70\linewidth}}
+        \hline
+        Nome                      & \textbf{\PPCDisciplina{#1}{nome}}             \\
+        \hline
+        Código                    & \PPCDisciplina{#1}{código}                    \\
+        \hline
+        Objetivo                  & \PPCDisciplina{#1}{objetivo}                  \\
+        \hline
+        Ementa                    & \PPCDisciplina{#1}{ementa}                    \\
+        \hline
+        Carga horária &
+        \ATForEach{\TipoHora}{teóricas, práticas, extensionistas, estágio}[{ e }{, }{ e }{}]{\PPCDisciplina{#1}{horas \TipoHora}h \TipoHora} \\
+        \hline
+        Departamento responsável  & \PPCDisciplina{#1}{departamento}              \\
+        \hline
+        Bibliografia básica       & \PPCDisciplina{#1}{bibliografia básica}       \\
+        \hline
+        Bibliografia complementar & \PPCDisciplina{#1}{bibliografia complementar} \\
+        \hline
+        Competências              & \textit{A ser feito\ldots}                    \\
+        \hline
+    \end{tabular}
+    \endgroup
+}
+
 \endinput
 
 
