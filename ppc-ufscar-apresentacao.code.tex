@@ -1,0 +1,72 @@
+%! Author = Jander Moreira
+%! Date = 10/10/2025
+%! Package = ppc-ufscar
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% APRESENTAÇÃO DE INFORMAÇÕES
+
+% PPCCapa: gera a página de capa
+\NewDocumentCommand{\PPCCapa}{}{
+    \pagestyle{empty}
+    \begin{center}
+        \large\textsc{\PPCInfo{instituição}}\par
+        \textsc{\PPCInfo{centro}}\par
+        \vfill
+        \begin{minipage}{0.8\linewidth}
+            \begin{center}
+                \LARGE\textsc{\textbf{\PPCInfo{curso}}}
+            \end{center}
+        \end{minipage}\par
+        \bigskip
+        \large\textbf{---~~Projeto Pedagógico de Curso~~---}\par
+        \vfill
+        \vspace*{10em}\PPCInfo{local}\par
+        \PPCInfo{ano}
+    \end{center}
+    \clearpage
+    \setcounter{page}{0}
+}
+
+% PPCDadosInstitucionais: gera a apresentação da instituição,
+%   suas unidades e pessoas
+\NewDocumentCommand{\PPCDadosInstitucionais}{}{
+    \pagestyle{empty}
+    \begingroup
+    \singlespacing
+    \begin{center}
+        \ATListForEach{dados-institucionais}{\Item}{\Item\par}
+    \end{center}
+    \endgroup
+    \clearpage
+    \setcounter{page}{1}
+    \ATListCreate{dados-institucionais}  % limpa para salvar memória
+}
+
+% PPCFichaDescritiva: apresenta a ficha descritiva
+\NewDocumentCommand{\PPCFichaDescritiva}{}{
+    \pagestyle{empty}
+    \begingroup
+    \begin{center}
+        \large
+        \textbf{Ficha Descritiva do Curso}
+    \end{center}
+    \vspace{3em}
+    \begin{center}
+        \ATListForEach{itens-ficha-descritiva}{\Item}{%
+            \noindent
+            \parbox[t]{0.4\linewidth}{%
+                \raggedleft
+                \ATAttributeIfExist[curso]{texto \Item}{
+                    \textbf{\PPCInfo{texto \Item}:}%
+                }{\textcolor{red}{\textbf{Texto não definido}}:}
+            }%
+            \hspace{0.02\linewidth}%
+            \parbox[t]{0.5\linewidth}{\PPCInfo{\Item}}%
+            \par
+        }
+    \end{center}
+    \endgroup
+    \clearpage
+    \setcounter{page}{1}
+    \ATListCreate{dados-institucionais}  % salva memória
+}
