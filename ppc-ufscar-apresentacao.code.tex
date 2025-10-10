@@ -5,6 +5,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% APRESENTAÇÃO DE INFORMAÇÕES
 
+\RequirePackage{titlesec}
+\RequirePackage{array}
+
+
 % PPCCapa: gera a página de capa
 \NewDocumentCommand{\PPCCapa}{}{
     \pagestyle{empty}
@@ -69,4 +73,34 @@
     \clearpage
     \setcounter{page}{1}
     \ATListCreate{dados-institucionais}  % salva memória
+}
+
+% PPCFichaDisciplina: apresenta a descrição da disciplina
+% #1: id da disciplina
+\NewDocumentCommand{\PPCFichaDisciplina}{ m }{
+    \begingroup
+    \singlespacing
+    \begin{tabular}{>{\bfseries\raggedright}p{0.25\linewidth}<{:}p{0.70\linewidth}}
+        \hline
+        Nome                      & \textbf{\PPCDisciplina{#1}{nome}}             \\
+        \hline
+        Código                    & \PPCDisciplina{#1}{código}                    \\
+        \hline
+        Objetivo                  & \PPCDisciplina{#1}{objetivo}                  \\
+        \hline
+        Ementa                    & \PPCDisciplina{#1}{ementa}                    \\
+        \hline
+        Carga horária &
+        \ATForEach{\TipoHora}{teóricas, práticas, extensionistas, estágio}[{ e }{, }{ e }{}]{\PPCDisciplina{#1}{horas \TipoHora}h \TipoHora} \\
+        \hline
+        Departamento responsável  & \PPCDisciplina{#1}{departamento}              \\
+        \hline
+        Bibliografia básica       & \PPCDisciplina{#1}{bibliografia básica}       \\
+        \hline
+        Bibliografia complementar & \PPCDisciplina{#1}{bibliografia complementar} \\
+        \hline
+        Competências              & \textit{A ser feito\ldots}                    \\
+        \hline
+    \end{tabular}
+    \endgroup
 }

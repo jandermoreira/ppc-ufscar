@@ -3,22 +3,15 @@
 %! Date = 25/04/2025
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ppc-ufscar}[2025/04/25 Classe para a edição de Projetos Pedagógicos de Curso]
-
-\@ifclassloaded{report}{}{
-    \PackageWarning{ppc-ufscar}{'ppc-ufscar' foi projetado para a classe 'report'}
-    \PackageWarning{ppc-ufscar}{O uso em outras classes pode causar comportamento imprevisível ou indesejável}
-}
+\ProvidesPackage{ppc-ufscar}[2025-10-10 Pacote para a edição de Projetos Pedagógicos de Curso]
 
 \NewDocumentCommand{\PPCVersion}{}{0.1}
+\NewDocumentCommand{\PPCDate}{}{2025-10-10}
 
-%
 % Pacotes
 \RequirePackage{etoolbox}
 \RequirePackage{attrtoolbox}
-\RequirePackage{titlesec}
 \RequirePackage{xcolor}
-\RequirePackage{array}
 \RequirePackage{pgf}
 
 
@@ -78,8 +71,13 @@
 }
 % \cs_generate_variant:nn \ppc_se_periodo_valido:nnT { ncT }
 
-\ExplSyntaxOff
 
+\@ifclassloaded{report}{}{
+    \ppc_aviso:n { ppc-ufscar }{ 'ppc-ufscar'~foi~projetado~para~a~classe~'report'. }
+    \ppc_aviso:n { ppc-ufscar }{ O~resultado~do~uso~em~outras~classes~pode~causar~comportamento~imprevisível~ou~indesejável. }
+}
+
+\ExplSyntaxOff
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FICHA DESCRITIVA
@@ -536,82 +534,5 @@
     \ATAttributeGet[#1-#2]{#3}%
 }
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% OUTROS AJUSTES
-
-% Modifica a aparência de apresentação do título do capítulo
-\titleformat{\chapter}{\normalfont\bfseries\Large}{\thechapter}{1em}{\Large}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% APRESENTAÇÃO DE INFORMAÇÕES
-
-% PPCCapa: gera a página de capa
-\NewDocumentCommand{\PPCCapa}{}{
-    \pagestyle{empty}
-    \begin{center}
-        \large\textsc{\PPCInfo{instituição}}\par
-        \textsc{\PPCInfo{centro}}\par
-        \vfill
-        \begin{minipage}{0.8\linewidth}
-            \begin{center}
-                \LARGE\textsc{\textbf{\PPCInfo{curso}}}
-            \end{center}
-        \end{minipage}\par
-        \large\textbf{---~~Projeto Pedagógico de Curso~~---}\par
-        \vfill
-        \vspace*{10em}\PPCInfo{local}\par
-        \PPCInfo{ano}
-    \end{center}
-    \clearpage
-    \setcounter{page}{0}
-}
-
-% PPCDadosInstitucionais: gera a apresentação da instituição,
-%   suas unidades e pessoas
-\NewDocumentCommand{\PPCDadosInstitucionais}{}{
-    \pagestyle{empty}
-    \begingroup
-    \singlespacing
-    \begin{center}
-        \ATListForEach{dados-institucionais}{\Item}{\Item\par}
-    \end{center}
-    \endgroup
-    \clearpage
-    \setcounter{page}{1}
-    \ATListCreate{dados-institucionais}  % limpa para salvar memória
-}
-
-% PPCFichaDescritiva: apresenta a ficha descritiva
-\NewDocumentCommand{\PPCFichaDescritiva}{}{
-    \pagestyle{empty}
-    \begingroup
-    \begin{center}
-        \large
-        \textbf{Ficha Descritiva do Curso}
-    \end{center}
-    \vspace{3em}
-    \begin{center}
-        \ATListForEach{itens-ficha-descritiva}{\Item}{%
-            \noindent
-            \parbox[t]{0.4\linewidth}{%
-                \raggedleft
-                \ATAttributeIfExist[curso]{texto \Item}{
-                    \textbf{\PPCInfo{texto \Item}:}%
-                }{\textcolor{red}{\textbf{Texto não definido}}:}
-            }%
-            \hspace{0.02\linewidth}%
-            \parbox[t]{0.5\linewidth}{\PPCInfo{\Item}}%
-            \par
-        }
-    \end{center}
-    \endgroup
-    \clearpage
-    \setcounter{page}{1}
-    \ATListCreate{dados-institucionais}  % salva memória
-}
-\endinput
-
-
-ODS?
+\input{ppc-ufscar-apresentacao.code}
+\input{ppc-ufscar-leiaute.code}
