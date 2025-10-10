@@ -20,9 +20,6 @@
 \RequirePackage{xcolor}
 \RequirePackage{array}
 \RequirePackage{pgf}
-\RequirePackage{hyperref}
-\RequirePackage{tikz}
-\usetikzlibrary{positioning, calc}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,10 +67,10 @@
     % #2: limite superior
     % #3: código se estiver 1 <= #1 <= #2
     \int_compare:nNnTF { #1 } { < } { 0 } {
-        \ppc_erro:n { Período~fora~do~intervalo~válido (1 a #2). }
+        \ppc_erro:n { Período~fora~do~intervalo~válido~(1~a~#2). }
     } {
         \int_compare:nNnTF { #1 } { > } { #2 } {
-            \ppc_erro:n { Período~fora~do~intervalo~válido (1 a #2). }
+            \ppc_erro:n { Período~fora~do~intervalo~válido~(1~a~#2). }
         } {
             #3
         }
@@ -219,9 +216,47 @@
 % buscando no diretório ./disciplinas
 % #1: lista separada por vírgulas com os nomes dos arquivos (sem .tex)
 \NewDocumentCommand{\PPCImporteDisciplinas}{ > { \TrimSpaces } m }{%
-    \RenewDocumentCommand{\do}{ m }{\input{./disciplinas/##1}}%
+    \RenewDocumentCommand{\do}{ m }{\input{##1}}%
     \docsvlist{#1}%
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SUPORTE PARA CARGA HORÁRIA
+
+\ExplSyntaxOn
+
+% ppc_defina_carga_horaria:n: cria (ou zera) um contador para carga horária
+\cs_new:Npn \ppc_defina_carga_horaria:n #1 {
+    % #1: nome do contador
+    \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_ #1 _int }
+}
+
+% ppc_some_carga_horaria:n: adiciona horas a um contador de carga horária
+\cs_new:Npn \ppc_some_carga_horaria:nn #1#2 {
+    % #1: nome do contador
+    % #2: quantidade de horas
+    \int_add:cn { g_ppc_ \l_ppc_matriz_corrente_tl _carga_ #1 _int } { #2 }
+}
+
+\cs_new:Npn \ppc_obtenha_carga_disciplina:Nn #1#2 {
+    % hack: acesso direto à variável interna AT da disciplina
+    \int_set:Nn #1 {
+        \tl_use:c { g_at_ #2 _ horas~teóricas _tl } +
+        \tl_use:c { g_at_ #2 _ horas~práticas _tl } +
+        \tl_use:c { g_at_ #2 _ horas~extensionistas _tl } +
+        \tl_use:c { g_at_ #2 _ horas~estágio _tl }
+    }
+
+}
+
+% PPCCargaHoraria: retorna um dos contadores de carga horária
+% #1: nome do contador
+\NewDocumentCommand{\PPCCargaHoraria}{ O {matriz-principal} m }{
+    \int_use:c { g_ppc_ #1 _carga_ #2 _int }
+}
+
+\ExplSyntaxOff
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MATRIZ CURRICULAR
@@ -234,10 +269,12 @@
 %         - Listas AT `<nome da matriz>-carga-optativas-<número do período>`
 %             vazias a serem preenchidas com a carga horária de cada optativa
 %             planejada
-%         - Variáveis `{ g_ppc_ <nome da matriz> _carga_a_compensar_ <nº período> _int }
+%         - Variáveis `{ g_ppc_ <nome da matriz> _carga_a_compensar_ <nº período> _int }`
 %             com a carga de horas a compensar (subtrair) para cada período
 %         - Lista AT `<nome da matriz>-periodo-<número do período>` vazia
 %             a ser preenchida com a lista de disciplinas do período.
+%         - Variáveis `{ g_ppc_ <nome da matriz> _carga_ <categoria horas> _int }`
+%             para contadores de carga horária (total, por período)
 %
 %     Se <nome da matriz> é omitido na definição, `matriz-principal` é o
 %     valor padrão.
@@ -263,8 +300,9 @@
     número~períodos .code:n = {
         \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
         \int_set:cn { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int } { #1 }
-        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_obrigatoria_int }
-        \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_optativa_int }
+        \ppc_defina_carga_horaria:n { total }
+        \ppc_defina_carga_horaria:n { obrigatória }
+        \ppc_defina_carga_horaria:n { optativa }
         \int_set:Nn \l_tmpa_int { 0 }  % contador
         \int_while_do:nNnn { \l_tmpa_int } { < } { #1 } {
             \int_add:Nn \l_tmpa_int { 1 }
@@ -277,6 +315,9 @@
             \int_zero_new:c {
                 g_ppc_ \l_ppc_matriz_corrente_tl _carga_a_compensar_ \int_use:N \l_tmpa_int _int
             }
+            \ppc_defina_carga_horaria:n { total~\int_use:N \l_tmpa_int }
+            \ppc_defina_carga_horaria:n { obrigatória~\int_use:N \l_tmpa_int }
+            \ppc_defina_carga_horaria:n { optativa~\int_use:N \l_tmpa_int }
         }
     },
     área .code:n = {
@@ -285,7 +326,10 @@
     carga~optativas .code:n = {
         \ppc_defina_carga_optativas:n { #1 }
     },
-    carga~a~compensar .code = {
+    eletivas .code:n = {
+        \ppc_defina_disciplinas_eletivas:n { #1 }
+    },
+    carga~a~compensar .code:n = {
         \ppc_defina_carga_a_compensar:n { #1 }
     },
 }
@@ -293,6 +337,11 @@
     \tl_clear_new:N \l_ppc_matriz_corrente_tl
     \tl_set:Nn \l_ppc_matriz_corrente_tl { #1 }
     \keys_set:nn { matriz-curricular } { #2 }
+    \exp_args:Nne \ppc_some_carga_horaria:nn { total } {
+        \int_use:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_obrigatória_int } +
+        \int_use:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_optativa_int }
+    }
+
 }
 \NewDocumentCommand{\PPCDefinaMatrizCurricular}{ O{matriz-principal} > { \TrimSpaces } m }{
     \ppc_defina_matriz_curricular:nn { #1 } { #2 }
@@ -326,16 +375,13 @@
     }
 }
 
-% PRESERVANDO O CÓDIGO PARA O FUTURO (???)
 % % ppc_caso_carater:nnnnn: processa disciplina conforme seu caráter
 % % vazio = obrigatória; * = opcional; : = estágio; @ = extensionista
-% \cs_new:Npn \ppc_caso_carater:nnnnnn #1#2#3#4#5#6 {
+% \cs_new:Npn \ppc_caso_carater:nnnn #1#2#3#4 {
 %     % #1: id da disciplina com possível modificador
 %     % #2: ação se for obrigatória
 %     % #3: ação se for optativa (prefixo o:)
-%     % #4: ação se for estágio (prefixo e:)
-%     % #5: ação se for extensionista (prefixo x:)
-%     % #6: ação se for tcc (prefixo t:)
+%     % #4: ação se for eletiva (prefixo e:)
 %     %
 %     % Define \l_ppc_disciplina_tl com o id da disciplina (sem prefixo)
 %     \tl_clear_new:N \l_ppc_prefixo_tl
@@ -347,11 +393,7 @@
 %     \str_if_eq:eeTF { \l_ppc_dois_pontos_tl } { : } {
 %         \str_if_eq:eeTF { \l_ppc_prefixo_tl } { o } { #3 } {
 %             \str_if_eq:eeTF { \l_ppc_prefixo_tl } { e } { #4 } {
-%                 \str_if_eq:eeTF { \l_ppc_prefixo_tl } { x } { #5 } {
-%                     \str_if_eq:eeTF { \l_ppc_prefixo_tl } { t } { #6 } {
-%                         \ppc_erro:n { Caráter~inválido:~'\tl_use:N \l_ppc_prefixo_tl'.~(#1). }
-%                     }
-%                 }
+%                 \ppc_erro:n { Caráter~inválido:~'\tl_use:N \l_ppc_prefixo_tl'.~(#1). }
 %             }
 %         }
 %     } {
@@ -399,18 +441,15 @@
         \seq_clear_new:N \l_ppc_lista_disciplinas_seq
         \seq_set_split:Nnn \l_ppc_lista_disciplinas_seq { , } { #2 }
         \int_zero_new:N \l_ppc_carga_da_disciplina_int
+        % \ppc_defina_carga_horaria:n { obrigatória~#1 }
         \seq_map_inline:Nn \l_ppc_lista_disciplinas_seq {
             \ppc_obtenha_id_disciplina:Nn \l_ppc_disciplina_tl { ##1 }
-            % hack: acesso direto à variável interna AT
-            \int_set:Nn \l_ppc_carga_da_disciplina_int {
-                \tl_use:c { g_at_ \l_ppc_disciplina_tl _ horas~teóricas _tl } +
-                \tl_use:c { g_at_ \l_ppc_disciplina_tl _ horas~práticas _tl } +
-                \tl_use:c { g_at_ \l_ppc_disciplina_tl _ horas~extensionistas _tl } +
-                \tl_use:c { g_at_ \l_ppc_disciplina_tl _ horas~estágio _tl }
-            }
+            \ppc_obtenha_carga_disciplina:Nn \l_ppc_carga_da_disciplina_int { \l_ppc_disciplina_tl }
             \ppc_caso_carater:nnn { ##1 } {  % obrigatório
                 \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{caráter = Obrigatório}
-                \int_add:cn { g_ppc_ \l_ppc_matriz_corrente_tl _carga_obrigatoria_int } { \l_ppc_carga_da_disciplina_int }
+                \ppc_some_carga_horaria:nn { obrigatória } { \int_use:N \l_ppc_carga_da_disciplina_int }
+                \ppc_some_carga_horaria:nn { total~#1 } { \int_use:N \l_ppc_carga_da_disciplina_int }
+                \ppc_some_carga_horaria:nn { obrigatória~#1 } { \int_use:N \l_ppc_carga_da_disciplina_int }
             } {  % optativo
                 \PPCDefinaDisciplina{\l_ppc_disciplina_tl}{caráter = Optativo}
             }
@@ -432,7 +471,8 @@
         \seq_clear_new:N \l_lista_horas_seq
         \seq_set_split:Nnn \l_lista_horas_seq { , } { #2 }
         \seq_map_inline:Nn \l_lista_horas_seq {
-            \int_add:cn { g_ppc_ \l_ppc_matriz_corrente_tl _carga_optativa_int } {##1}
+            \ppc_some_carga_horaria:nn { optativa } { ##1 }
+            \ppc_some_carga_horaria:nn { optativa~#1 } { ##1 }
         }
     }
 }
@@ -447,6 +487,20 @@
 \cs_new:Npn \ppc_defina_carga_optativas:n #1 {
     \keys_set:nn { carga-optativas } { #1 }
 }
+
+% ppc_defina_disciplinas_eletivas:n: cria lista com as disciplinas eletivas
+\cs_new:Npn \ppc_defina_disciplinas_eletivas:n #1 {
+    \ATListCreate{\l_ppc_matriz_corrente_tl -eletivas}
+    \ATListAppendItems{\l_ppc_matriz_corrente_tl -eletivas}{#1}
+    \ppc_defina_carga_horaria:n { eletiva }
+    \seq_set_split:Nnn \l_ppc_lista_disciplinas_seq { , } { #1 }
+    \int_zero_new:N \l_ppc_carga_da_disciplina_int
+    \seq_map_inline:Nn \l_ppc_lista_disciplinas_seq {
+        \ppc_obtenha_carga_disciplina:Nn \l_ppc_carga_da_disciplina_int { ##1 }
+        \ppc_some_carga_horaria:nn { eletiva } { \int_use:N \l_ppc_carga_da_disciplina_int }
+    }
+}
+
 
 % ppc_defina_carga_a_compensar_periodo:nn: defina quais as cargas de optativas para
 %   um período específico
@@ -489,22 +543,6 @@
 % Modifica a aparência de apresentação do título do capítulo
 \titleformat{\chapter}{\normalfont\bfseries\Large}{\thechapter}{1em}{\Large}
 
-% Cores para os links
-\hypersetup{
-    colorlinks = true,
-    linkcolor = blue!10!black,
-    citecolor = green!30!black,
-    urlcolor = teal!70!black,
-}
-
-\newcommand{\todotikz}[1]{%
-    \tikz[remember picture, overlay]{%
-        \node[draw=red!70!black, fill=yellow!20, rounded corners=1pt,
-            font=\footnotesize, anchor=east]
-        at ($(current page.west)+(3cm,0)$) (nota) {#1};
-    }%
-}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% APRESENTAÇÃO DE INFORMAÇÕES
@@ -521,7 +559,6 @@
                 \LARGE\textsc{\textbf{\PPCInfo{curso}}}
             \end{center}
         \end{minipage}\par
-        \bigskip
         \large\textbf{---~~Projeto Pedagógico de Curso~~---}\par
         \vfill
         \vspace*{10em}\PPCInfo{local}\par
@@ -576,15 +613,5 @@
 }
 \endinput
 
-Contagem de horas, separando teóricas, práticas, extensão e estágio:
-    - Obrigatórias
-    - Optativas
-    - Extensionistas
-    - Estágio
-    - Total
-
-Listas:
-    - Lista de id de disciplina total
-    - Lista de id de disciplina por área
 
 ODS?
