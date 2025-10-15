@@ -1,7 +1,9 @@
 %! Author = Ghost Writer
 %! Date = 25/04/2025
 
-\documentclass{ppc-ufscar}
+\documentclass[a3]{ppc-ufscar}
+
+\usepackage{kantlipsum}
 
 \PPCConfig{
     ficha descritiva = false,
@@ -81,16 +83,16 @@
         1 = {astro-fic, bio-sint},
         2 = {eco-fic-avanc, eco-fic-ext},
         3 = {quim-fic},
-        4 = {eco-fic},
-        5 = {med-fic-ext2, med-fic-ext},
+        5 = {med-fic-ext2, med-fic-ext, eco-fic},
         6 = {med-fic, *quim-fic-ext},
-        8 = {*astro-fic-avanc, astro-fic-ext},
+        8 = {astro-fic-avanc, *astro-fic-ext},
     },
     área = {hum-soc}{
         nome = {Fundamentos de Ciências Humanas e Sociais Fantásticas},
         1 = {antrop-fic, arqueo-fic-ext},
         2 = {arqueo-fic},
         3 = {filo-fic, *geo-fic-ext},
+        4 = {*hist-alt-avanc, *tec-espec},
         5 = {hist-alt-ext},
         6 = {*ling-fic},
         7 = {lingua-fic, psico-fic-avanc},
@@ -99,6 +101,7 @@
     área = {art-ling}{
         nome = {Fundamentos de Artes e Linguagens Fantásticas},
         6 = {*art-fic, *mus-fic-avanc},
+        4 = {tec-fic-avanc},
         8 = {mus-fic, nano-art},
     },
     área = {tec-eng}{
@@ -107,10 +110,11 @@
         7 = {tec-fic-ext, tec-fic, tcc},
     },
     carga optativas = {
-        4 = {60, 60, 90},
-        7 = {30, 60, 60, 60},
+        3 = {60, 60},
+        4 = {60},
+        6 = {30, 60, 60, 60, 120},
     },
-    eletivas = {hist-alter, geo-fic, hist-alt-avanc, tec-espec, tec-fic-avanc},
+    eletivas = {hist-alter, geo-fic},
     carga a compensar = {
         3 = 30,
         8 = 360,
@@ -130,6 +134,7 @@ Centro: \PPCInfo{centro}
 \chapter{Ficha descritiva}
 
 \PPCFichaDescritiva
+
 
 \chapter{Lista de disciplinas}
 
@@ -152,7 +157,8 @@ Centro: \PPCInfo{centro}
 
 \subsubsection*{Lista por períodos}
 
-\ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+
+\PPCParaCadaPeriodo{\p}{
     \noindent\p --
     \ATListForEach{matriz-principal-periodo-\p}{\Disc}[{ e }{, }{ e }{}]{(\PPCDisciplina{\Disc}{nome})}\par
 }
@@ -160,9 +166,11 @@ Centro: \PPCInfo{centro}
 
 \chapter{Lista de disciplinas por área}
 
-\ATForEach{\Area}{nat-bio, hum-soc, art-ling, tec-eng}{
+\PPCParaCadaPeriodo{\p}
+
+\ATListForEach{matriz-principal-áreas}{\Area}{
     \subsubsection*{\Area: \PPCArea{\Area}{nome}}
-    \ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+    \PPCParaCadaPeriodo{\p}{
         \noindent\p --~\ATListForEach{matriz-principal-\Area-\p}{\Disc}[{ e }{, }{ e também }{}]{(\Disc)/\PPCDisciplina{\Disc}{nome}}\par
     }
 }
@@ -170,7 +178,8 @@ Centro: \PPCInfo{centro}
 
 \chapter{Carga de optativas}
 
-\ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+
+\PPCParaCadaPeriodo[matriz-principal]{\p}{
     \noindent\p --
     \ATListForEach{matriz-principal-carga-optativas-\p}{\v}[{ e }{, }{ e }{}]{\v}\par
 }
@@ -179,7 +188,7 @@ Centro: \PPCInfo{centro}
 \chapter{Carga horária para compensação}
 
 \ExplSyntaxOn
-\ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+\PPCParaCadaPeriodo{\p}{
     \noindent\p~--~
     \int_use:c {g_ppc_matriz-principal_carga_a_compensar_ \p _int}~horas\par
 }
@@ -197,14 +206,15 @@ Cargas horárias:
 
 Total disponível em eletivas: \PPCCargaHoraria{eletiva}h.
 
-\ATForEach{\p}{1, 2, 3, 4, 5, 6, 7, 8}{
+\PPCParaCadaPeriodo{\p}{
     \noindent\textbf{Período: \p}
     \begin{itemize}
-        \item Total obrigatória: \PPCCargaHoraria{obrigatória \p}h.
+        \item Total obrigatória: \PPCCargaHoraria{obrigatória \p}[h].
         \item Total optativa: \PPCCargaHoraria{optativa \p}h.
         \item[+] Total do período: \PPCCargaHoraria{total \p}h.
     \end{itemize}
 }
+
 
 \section{Disciplinas}
 
@@ -222,5 +232,27 @@ Total disponível em eletivas: \PPCCargaHoraria{eletiva}h.
 }{
     \PPCFichaDisciplina{\Id}\clearpage
 }
+
+
+\chapter{Desenhos}
+
+\PPCDefinaMatrizCurricular[trilha1]{
+    nome período = {semestre},
+    número períodos = 8,
+    área = {nat-bio}{
+        nome = {Trilha da Natureza},
+        5 = {med-fic-ext2, med-fic-ext, *eco-fic},
+        6 = {med-fic, *quim-fic-ext},
+        8 = {astro-fic-avanc, *astro-fic-ext},
+    },
+}
+
+\begin{landscape}
+    \PPCMatrizCurricular
+
+    \PPCMatrizCurricular<cor fundo optativa = magenta!40, visão do aluno>
+
+    \PPCMatrizCurricular[trilha1]<>
+\end{landscape}
 
 \end{document}
