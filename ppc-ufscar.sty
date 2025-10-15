@@ -3,7 +3,7 @@
 %! Date = 25/04/2025
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ppc-ufscar}[2025-10-10 Pacote para a edição de Projetos Pedagógicos de Curso]
+\ProvidesPackage{ppc-ufscar}[2025-10-10 Pacote para a edição de Projeto Pedagógico de Curso - PPC]
 
 \NewDocumentCommand{\PPCVersion}{}{0.1}
 \NewDocumentCommand{\PPCDate}{}{2025-10-10}
@@ -69,7 +69,16 @@
         }
     }
 }
-% \cs_generate_variant:nn \ppc_se_periodo_valido:nnT { ncT }
+
+\NewDocumentCommand{\PPCIf}{ m +m +m}{
+    \bool_if:cTF { #1  } { #2 } { #3 }
+}
+
+% \NewDocumentCommand{\PPCIfZero}{ m +m +m }{
+%     \tl_set:No \l_tmpa_tl { #1 }
+%     \tl_show:N \l_tmpa_tl
+%     % \ifnumcomp{#1}{=}{0}{#1}{#2}
+% }
 
 
 \@ifclassloaded{report}{}{
@@ -214,7 +223,7 @@
 % buscando no diretório ./disciplinas
 % #1: lista separada por vírgulas com os nomes dos arquivos (sem .tex)
 \NewDocumentCommand{\PPCImporteDisciplinas}{ > { \TrimSpaces } m }{%
-    \RenewDocumentCommand{\do}{ m }{\input{##1}}%
+    \RenewDocumentCommand{\do}{ m }{\input{./disciplinas/##1}}%
     \docsvlist{#1}%
 }
 
@@ -237,20 +246,33 @@
 }
 
 \cs_new:Npn \ppc_obtenha_carga_disciplina:Nn #1#2 {
-    % hack: acesso direto à variável interna AT da disciplina
+    % #1: macro para guardar o valor total
+    % #2: id da disciplina
     \int_set:Nn #1 {
+        % hack: acesso direto à variável interna AT da disciplina
         \tl_use:c { g_at_ #2 _ horas~teóricas _tl } +
         \tl_use:c { g_at_ #2 _ horas~práticas _tl } +
         \tl_use:c { g_at_ #2 _ horas~extensionistas _tl } +
         \tl_use:c { g_at_ #2 _ horas~estágio _tl }
     }
-
+}
+\NewDocumentCommand{\ppc@ObtenhaCargaDisciplina}{ m m }{
+    \ppc_obtenha_carga_disciplina:Nn \l_tmpa_int { #2 }
+    \def#1{\int_use:N \l_tmpa_int}
 }
 
 % PPCCargaHoraria: retorna um dos contadores de carga horária
-% #1: nome do contador
-\NewDocumentCommand{\PPCCargaHoraria}{ O {matriz-principal} m }{
-    \int_use:c { g_ppc_ #1 _carga_ #2 _int }
+% #1: (optional) star: volta vazio se igual a zero
+% #2: nome da matriz
+% #3: nome do contador
+\NewDocumentCommand{\PPCCargaHoraria}{ s O {matriz-principal} m O{} }{
+    \IfBooleanTF{#1}{
+        \int_if_zero:nTF { \int_use:c { g_ppc_ #2 _carga_ #3 _int } } { } {
+            \int_use:c { g_ppc_ #2 _carga_ #3 _int }#4
+        }
+    }{
+        \int_use:c { g_ppc_ #2 _carga_ #3 _int }#4
+    }
 }
 
 \ExplSyntaxOff
@@ -302,7 +324,7 @@
         \ppc_defina_carga_horaria:n { obrigatória }
         \ppc_defina_carga_horaria:n { optativa }
         \int_set:Nn \l_tmpa_int { 0 }  % contador
-        \int_while_do:nNnn { \l_tmpa_int } { < } { #1 } {
+        \int_while_do:nNnn { \l_tmpa_int } { < } { #1 } {  % para cada período
             \int_add:Nn \l_tmpa_int { 1 }
             \ATListCreate{
                 \l_ppc_matriz_corrente_tl -periodo- \int_use:N \l_tmpa_int
@@ -334,6 +356,7 @@
 \cs_new:Npn \ppc_defina_matriz_curricular:nn #1#2 {
     \tl_clear_new:N \l_ppc_matriz_corrente_tl
     \tl_set:Nn \l_ppc_matriz_corrente_tl { #1 }
+    \ATListCreate{\l_ppc_matriz_corrente_tl-áreas}
     \keys_set:nn { matriz-curricular } { #2 }
     \exp_args:Nne \ppc_some_carga_horaria:nn { total } {
         \int_use:c { g_ppc_ \l_ppc_matriz_corrente_tl _carga_obrigatória_int } +
@@ -422,6 +445,8 @@
     \seq_set_split:Nnn \l_local_argumentos_seq { } { #1 }
     \tl_clear_new:N \l_ppc_area_tl
     \seq_pop_left:NN \l_local_argumentos_seq \l_ppc_area_tl
+    \ATListAppendItemsFrom{\l_ppc_matriz_corrente_tl-áreas}{\l_ppc_area_tl}
+    \ATAttributeSet[\l_ppc_matriz_corrente_tl-periodo]{nome}{Disciplinas}
     \seq_pop_left:NN \l_local_argumentos_seq \l_tmpa_tl
     \exp_args:NnV \keys_set:nn { área-matriz } \l_tmpa_tl
 }
@@ -471,6 +496,7 @@
         \seq_map_inline:Nn \l_lista_horas_seq {
             \ppc_some_carga_horaria:nn { optativa } { ##1 }
             \ppc_some_carga_horaria:nn { optativa~#1 } { ##1 }
+            \ppc_some_carga_horaria:nn { total~#1 } { ##1 }
         }
     }
 }
@@ -524,6 +550,24 @@
     \keys_set:nn { carga-a-compensar } { #1 }
 }
 
+% PPCParaCadaPeriodo
+% #1:(opcional) nome da matriz
+% #2: macro com o número do período
+% #3: código a ser executado
+\cs_new:Npn \ppc_para_cada_periodo:nnn #1#2#3 {
+    \int_set:Nn \l_tmpa_int { 0 }  % contador
+    \exp_args:NNc \int_set:Nn \l_tmpb_int { g_ppc_ #1 _numero_periodos_int } % número de períodos
+    \tl_clear_new:N #2
+    \int_while_do:nNnn { \l_tmpa_int } { < } { \l_tmpb_int } {
+        \int_add:Nn \l_tmpa_int { 1 }
+        \tl_set:Nn #2 { \int_use:N \l_tmpa_int }
+        #3
+    }
+}
+\NewDocumentCommand{\PPCParaCadaPeriodo}{ O{matriz-principal} m +m }{
+    \ppc_para_cada_periodo:nnn { #1 } { #2 } { #3 }
+}
+
 \ExplSyntaxOff
 
 % PPCArea: retorna o valor de um atributo de uma área
@@ -534,5 +578,9 @@
     \ATAttributeGet[#1-#2]{#3}%
 }
 
+
 \input{ppc-ufscar-apresentacao.code}
 \input{ppc-ufscar-leiaute.code}
+\input{ppc-ufscar-grafico.code.tex}
+
+\endinput
