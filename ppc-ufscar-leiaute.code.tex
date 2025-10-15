@@ -7,7 +7,13 @@
 
 \RequirePackage{hyperref}
 \RequirePackage{titlesec}
+\RequirePackage{enumitem}
+\RequirePackage{etoolbox}
+\RequirePackage{pdflscape}
 
+
+% Parágrafos
+\setlength{\parindent}{1.5cm}
 
 % Cores para os links
 \hypersetup{
@@ -16,6 +22,17 @@
     citecolor = green!30!black,
     urlcolor = teal!70!black,
 }
+
+% Ajustes para itens enumerados
+\setlist{
+    topsep = -0.5\baselineskip,
+    partopsep = 0pt,
+    itemsep = 0pt,
+}
+\preto{\itemize}{\singlespacing}
+\preto{\enumerate}{\singlespacing}
+\appto{\enditemize}{\vspace{-3\topsep}\par}
+\appto{\endenumerate}{\vspace{-3\topsep}\par}
 
 % Aparência de apresentação do título do capítulo
 \titleformat{\chapter}{\normalfont\bfseries\Large}{\thechapter}{1em}{\Large}
