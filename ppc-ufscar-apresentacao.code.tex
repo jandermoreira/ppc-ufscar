@@ -7,7 +7,15 @@
 
 \RequirePackage{titlesec}
 \RequirePackage{array}
+\RequirePackage{float}
+\RequirePackage{etoolbox}
+\RequirePackage{multirow}
+\RequirePackage{ragged2e}
 
+% Quadros
+\floatstyle{plaintop}
+\newfloat{quadro}{H}{loq}[chapter]
+\floatname{quadro}{Quadro}
 
 % PPCCapa: gera a página de capa
 \NewDocumentCommand{\PPCCapa}{}{
@@ -104,4 +112,76 @@
         \hline
     \end{tabular}
     \endgroup
+}
+
+% ppc@ApresenteTabelaPeriodo: apresenta a tabela para um período específico
+% #1: (opcional) nome da matriz
+% #2: número do período
+\newcounter{ppc@NumeroItem}
+\NewDocumentCommand{\ppc@ConteudoTabelaPeriodo}{}{}
+\NewDocumentCommand{\ppc@ApresenteTabelaPeriodo}{ O{matriz-principal} m m } {%
+    \csdef{ppc@ConteudoTabelaPeriodo}{}%
+    \defcounter{ppc@NumeroItem}{0}%
+    \ATListForEach{#1-periodo-#2}{\codigo}{%
+        \stepcounter{ppc@NumeroItem}%
+        \xappto{\ppc@ConteudoTabelaPeriodo}{%
+            \theppc@NumeroItem &
+            \PPCDisciplina{\codigo}{nome} &
+            \PPCDisciplina{\codigo}{pré-requisitos} &
+            \PPCDisciplina{\codigo}{departamento} &
+            \PPCDisciplina{\codigo}{caráter} &
+            \PPCDisciplina{\codigo}{horas práticas} &
+            \PPCDisciplina{\codigo}{horas teóricas} &
+            \PPCDisciplina{\codigo}{horas extensionistas} &
+            \PPCDisciplina{\codigo}{horas estágio} &
+            \PPCDisciplina{\codigo}{horas total}
+            \\
+        }%
+    }%
+    \begin{quadro}
+        \caption{#3}
+        \bigskip
+        \begin{tabular}{c>{\RaggedRight\arraybackslash}p{6cm}>{\RaggedRight\arraybackslash}p{5cm}ccccccc}
+            \hline
+            \multirow{2}{*}{\textbf{nº}} &
+            \multirow{2}{*}{\textbf{Disciplina}} &
+            \multirow{2}{*}{\textbf{Requisitos}} &
+            \textbf{Depto.} &
+            \multirow{2}{*}{\textbf{Caráter}} &
+            \multicolumn{5}{c}{\textbf{Natureza (horas)}}
+            \\
+            % nº
+            & % disciplina
+            & % requisitos
+            & \textbf{Ofertante}
+            & % caráter
+            & \textbf{T} & \textbf{P} & \textbf{Ext} & \textbf{Est} & \textbf{Total}
+            \\
+            \hline
+            \ppc@ConteudoTabelaPeriodo%
+            \hline
+        \end{tabular}\par
+    \end{quadro}
+}
+
+% PPCQuadroPeriodo: apresenta um quadro com as disciplinas de um ou mais períodos.
+% #1: (opcional) nome da matriz
+% #2: lista separada por vírgula dos períodos (se vazia, todos)
+\NewDocumentCommand{\PPCQuadroPeriodo}{ O{matriz-principal} > { \TrimSpaces } m o } {%
+    \begingroup%
+    \singlespacing%
+    \ifstrempty{#2}{%
+        \csdef{ppc@local@ListaPeriodos}{1, 2, 3, 4, 5, 6, 7, 8}%
+    }{%
+        \csdef{ppc@local@ListaPeriodos}{#2}%
+    }%
+    \IfValueTF{#3}{%
+        \csdef{ppc@local@Titulo}{#3}%
+    }{%
+        \csdef{ppc@local@Titulo}{Disciplinas do \periodoº \ATAttributeGet[#1]{nome período}~(Carga horária de \PPCCargaHoraria{total \periodo}\,h).}%
+    }%
+    \ATForEachFrom{\periodo}{\ppc@local@ListaPeriodos}{%
+        \ppc@ApresenteTabelaPeriodo[#1]{\periodo}{\ppc@local@Titulo}
+    }%
+    \endgroup%
 }
