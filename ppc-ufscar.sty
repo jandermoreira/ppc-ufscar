@@ -74,11 +74,11 @@
     \bool_if:cTF { #1  } { #2 } { #3 }
 }
 
-% \NewDocumentCommand{\PPCIfZero}{ m +m +m }{
-%     \tl_set:No \l_tmpa_tl { #1 }
-%     \tl_show:N \l_tmpa_tl
-%     % \ifnumcomp{#1}{=}{0}{#1}{#2}
-% }
+\ExplSyntaxOn
+\NewDocumentCommand{\ppc@IntUse}{ m }{
+    \int_use:N #1
+}
+\ExplSyntaxOff
 
 
 \@ifclassloaded{report}{}{
@@ -210,6 +210,9 @@
 % #2: lista separada por vírgulas com atributos e seus valores (atributo = {valor})
 \NewDocumentCommand{\PPCDefinaDisciplina}{ m >{ \TrimSpaces } m }{%
     \ATClassSet{#1}{#2}%
+    \ppc@ObtenhaCargaDisciplina{\ppc@local@Total}{#1}%
+    \csedef{ppc@local@TotalHoras}{horas total = \ppc@local@Total}%
+    \ATClassSetFrom{#1}{\ppc@local@TotalHoras}%
 }
 
 % PPCDisciplina: expande para o valor de um dado atributo de uma disciplina
@@ -316,6 +319,7 @@
     nome~período .code:n = {
         \tl_clear_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _nome_periodo_tl }
         \tl_set:cn { g_ppc_ \l_ppc_matriz_corrente_tl _nome_periodo_tl } { #1 }
+        \ATAttributeSet[\l_ppc_matriz_corrente_tl]{nome~período}{#1}
     },
     número~períodos .code:n = {
         \int_zero_new:c { g_ppc_ \l_ppc_matriz_corrente_tl _numero_periodos_int }
