@@ -105,9 +105,22 @@
 
 \ExplSyntaxOn
 
+
+\cs_new:Npn \ppc_separe_texto_conteudo:NNn #1#2#3 {
+    % #1: macro para colocar o texto
+    % #2: macro para colocar o conteúdo
+    % #3: par {texto-do-item}{valor-do-item}
+    \seq_set_split:Nnn \l_local_argumentos_seq { } { #3 }
+    \tl_clear_new:N #1
+    \seq_pop_left:NN \l_local_argumentos_seq #1
+    \tl_clear_new:N #2
+    \seq_pop_left:NN \l_local_argumentos_seq #2
+}
+
+
 % PPCDefinaFichaDescritiva: descrição dos dados sobre o curso
 % #1: lista com os atributos do curso
-\cs_new:Npn \ppc_separe_texto_conteudo:n #1 {
+\cs_new:Npn \ppc_separe_texto_conteudo_curso:n #1 {
     % #1: par {texto-do-item}{valor-do-item}
     \seq_set_split:Nnn \l_local_argumentos_seq { } { #1 }
     \seq_pop_left:NN \l_local_argumentos_seq \l_tmpa_tl
@@ -116,10 +129,10 @@
     \ATAttributeSetFrom[curso]{\l_keys_key_str}{\l_tmpa_tl}
 }
 \keys_define:nn { ficha-descritiva }{
-    ano .code:n = { \ppc_separe_texto_conteudo:n { #1 } },
-    local .code:n = { \ppc_separe_texto_conteudo:n { #1 } },
+    ano .code:n = { \ppc_separe_texto_conteudo_curso:n { #1 } },
+    local .code:n = { \ppc_separe_texto_conteudo_curso:n { #1 } },
     unknown .code:n = {
-        \ppc_separe_texto_conteudo:n { #1 }
+        \ppc_separe_texto_conteudo_curso:n { #1 }
         \ATListAppendItemsFrom{itens-ficha-descritiva}{\l_keys_key_str}
     },
 }
@@ -582,9 +595,9 @@
     \ATAttributeGet[#1-#2]{#3}%
 }
 
-
 \input{ppc-ufscar-apresentacao.code}
 \input{ppc-ufscar-leiaute.code}
 \input{ppc-ufscar-grafico.code.tex}
+\input{ppc-ufscar-competencias.code.tex}
 
 \endinput

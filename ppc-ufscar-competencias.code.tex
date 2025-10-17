@@ -1,0 +1,137 @@
+%! Author = Jander Moreira
+%! Date = 17/10/2025
+%! Package = ppc-ufscar
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% GERENCIAMENTO DE COMPETÊNCIAS
+
+
+% PPCDefinaCompetencias: define conjunto de competências 
+% #1: lista separada por vírgula com definições de competências gerais
+%   Baseado em http://www.pdi.ufscar.br/aspectos-academicos/perfil-do-profissional
+
+\ExplSyntaxOn
+
+% PPCDefinaCompetencias: processa lista de competências
+% #1: lista separada por vírgulas de competências gerais
+\cs_new:Npn \ppc_defina_competencias:n #1 {
+    % #1: par {id da competência}{descrição}
+    \ppc_separe_texto_conteudo:NNn \l_ppc_competencia_geral_corrente_tl \l_ppc_competencia_geral_descricao_tl { #1 }
+    \ATListAppendItemsFrom{ppc-competências}{\l_ppc_competencia_geral_corrente_tl}
+    \ATListCreate{ppc-competência-\tl_use:N \l_ppc_competencia_geral_corrente_tl}
+    \exp_args:No \ppc_defina_competencia_geral:n { \l_ppc_competencia_geral_descricao_tl }
+}
+\keys_define:nn { competencias } {
+    competência~geral .code:n = {
+        \ppc_defina_competencias:n { #1 }
+    },
+}
+\ATListCreate{ppc-competências}
+\NewDocumentCommand{\PPCDefinaCompetencias}{ m }{
+    \keys_set:nn { competencias } { #1 }
+}
+
+
+% xxx: processa uma competência geral
+\cs_new:Npn \ppc_defina_competencia_especifica:n #1 {
+    % #1: par {id da competência}{descrição}
+    \ppc_separe_texto_conteudo:NNn \l_ppc_competencia_especifica_tl \l_ppc_competencia_descricao_tl { #1 }
+    \ATListAppendItemsFrom{ppc-competência-\tl_use:N \l_ppc_competencia_geral_corrente_tl}{\l_ppc_competencia_especifica_tl}
+    \ATAttributeSetFrom[\tl_use:N \l_ppc_competencia_especifica_tl]{nome}{\l_ppc_competencia_geral_corrente_tl}
+    \ATAttributeSetFrom[\tl_use:N \l_ppc_competencia_especifica_tl]{descrição}{\l_ppc_competencia_descricao_tl}
+}
+\keys_define:nn { competencia-geral } {
+    nome .code:n = {
+        \ATAttributeSet[\tl_use:N \l_ppc_competencia_geral_corrente_tl]{nome}{#1}
+    },
+    descrição .code:n = {
+        \ATAttributeSet[\tl_use:N \l_ppc_competencia_geral_corrente_tl]{descrição}{#1}
+    },
+    competência~específica .code:n = {
+        \ppc_defina_competencia_especifica:n { #1 }
+    },
+}
+\cs_new:Npn \ppc_defina_competencia_geral:n #1 {
+    % #1: lista separada por vírgulas com a descrição da competência geral
+    \keys_set:nn { competencia-geral } { #1 }
+}
+
+
+\NewDocumentCommand{\PPCCompetencia}{ m m }{
+    \ATAttributeGet[#1]{#2}
+}
+
+
+
+
+\ExplSyntaxOff
+
+
+\PPCDefinaCompetencias{
+    competência geral = {cg-ufscar-aprender}{
+        nome = Aprender,
+        descrição = {Aprender de forma autônoma e contínua.},
+        competência específica = {ce-ap-1}{Interagir com fontes diretas — observação e coleta de dados em situações naturais e experimentais.},
+        competência específica = {ce-ap-2}{Interagir com fontes indiretas — meios de comunicação, divulgação e difusão (abstracts, relatórios técnico-científicos, relatos de pesquisa, artigos, livros, revistas, jornais, arquivos, mídias eletrônicas e outros, científicos ou não).},
+        competência específica = {ce-ap-3}{Selecionar e examinar criticamente essas fontes, com base em critérios de relevância, rigor, ética e estética.},
+        competência específica = {ce-ap-4}{Realizar o duplo movimento de derivar o conhecimento das ações e as ações do conhecimento disponível.}
+    },
+    competência geral = {cg-ufscar-produzir}{
+        nome = Produzir,
+        descrição = {Produzir e divulgar novos conhecimentos, tecnologias, serviços e produtos.},
+        competência específica = {ce-pro-1}{Identificar problemas relevantes.},
+        competência específica = {ce-pro-2}{Planejar procedimentos adequados para resolução desses problemas.},
+        competência específica = {ce-pro-3}{Avaliar o impacto potencial ou real das novas propostas, considerando aspectos técnico-científicos, éticos e políticos.},
+        competência específica = {ce-pro-4}{Implementar o planejamento realizado.},
+        competência específica = {ce-pro-5}{Relatar e apresentar os trabalhos realizados.}
+    },
+    competência geral = {cg-ufscar-empreender}{
+        nome = Empreender,
+        descrição = {Empreender formas diversificadas de atuação profissional.},
+        competência específica = {ce-emp-1}{Identificar problemas passíveis de abordagem na área de atuação profissional.},
+        competência específica = {ce-emp-2}{Propor soluções para os problemas identificados.},
+        competência específica = {ce-emp-3}{Identificar novas necessidades de atuação profissional.},
+        competência específica = {ce-emp-4}{Construir possibilidades de atuação frente às novas demandas.},
+        competência específica = {ce-emp-5}{Comprometer-se com os resultados da atuação profissional.}
+    },
+    competência geral = {cg-ufscar-atuar}{
+        nome = Atuar,
+        descrição = {Atuar de forma inter, multi e transdisciplinar.},
+        competência específica = {ce-atuar-1}{Dominar conhecimentos e habilidades da área específica.},
+        competência específica = {ce-atuar-2}{Dominar conhecimentos e habilidades gerais e básicas de outras áreas.},
+        competência específica = {ce-atuar-3}{Relacionar conhecimentos e habilidades de diferentes áreas.},
+        competência específica = {ce-atuar-4}{Aplicar conhecimentos e habilidades em diferentes situações dentro do campo profissional.},
+        competência específica = {ce-atuar-5}{Trabalhar em equipes multidisciplinares.}
+    },
+    competência geral = {cg-ufscar-comprometer}{
+        nome = Comprometer,
+        descrição = {Comprometer-se com a preservação da biodiversidade, a sustentabilidade e a melhoria da qualidade de vida.},
+        competência específica = {ce-compr-1}{Compreender as relações entre homem, ambiente, tecnologia e sociedade.},
+        competência específica = {ce-compr-2}{Identificar problemas a partir dessas relações.},
+        competência específica = {ce-compr-3}{Propor e/ou implantar soluções, articulando conhecimentos, selecionando e desenvolvendo tecnologias, promovendo educação ambiental e implementando leis de proteção ambiental.}
+    },
+    competência geral = {cg-ufscar-gerenciar}{
+        nome = Gerenciar,
+        descrição = {Gerenciar processos participativos de organização pública e/ou privada, ou incluir-se neles.},
+        competência específica = {ce-ger-1}{Dominar habilidades básicas de comunicação, negociação e cooperação.},
+        competência específica = {ce-ger-2}{Conhecer os processos envolvidos nas relações interpessoais e de grupo.},
+        competência específica = {ce-ger-3}{Coordenar ações de diferentes pessoas ou grupos.}
+    },
+    competência geral = {cg-ufscar-pautar}{
+        nome = Pautar,
+        descrição = {Pautar-se na ética e na solidariedade enquanto ser humano, cidadão e profissional.},
+        competência específica = {ce-paut-1}{Conhecer e respeitar a si mesmo e aos outros.},
+        competência específica = {ce-paut-2}{Conhecer e respeitar os direitos individuais e coletivos.},
+        competência específica = {ce-paut-3}{Respeitar as diferenças culturais, políticas e religiosas.},
+        competência específica = {ce-paut-4}{Cumprir deveres.},
+        competência específica = {ce-paut-5}{Cumprir deveres.} % repetido conforme documento original
+    },
+    competência geral = {cg-ufscar-buscar}{
+        nome = Buscar,
+        descrição = {Buscar maturidade, sensibilidade e equilíbrio ao agir profissionalmente.},
+        competência específica = {ce-busc-1}{Identificar situações geradoras de estresse.},
+        competência específica = {ce-busc-2}{Preparar-se para agir em situações estressantes, equilibrando-as com momentos relaxadores.},
+        competência específica = {ce-busc-3}{Tomar decisões e desencadear ações, considerando potencialidades, limites e exigências da atuação profissional.},
+        competência específica = {ce-busc-4}{Promover e aprofundar gradualmente o autoconhecimento e o conhecimento dos outros.}
+    }
+}

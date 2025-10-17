@@ -256,11 +256,23 @@ Total disponível em eletivas: \PPCCargaHoraria{eletiva}h.
 % \end{landscape}
 
 
-
-    \chapter{Períodos}
+\chapter{Períodos}
 \begin{landscape}
     \PPCQuadroPeriodo{}
 \end{landscape}
 
+
+\chapter{Competências}
+\begin{itemize}
+    \ATListForEach{ppc-competências}{\comp}{
+        \item \comp \\
+            \PPCCompetencia{\comp}{nome}: \PPCCompetencia{\comp}{descrição}
+        \begin{itemize}
+            \ATListForEach{ppc-competência-cg-ufscar-aprender}{\espec}{
+                \item \espec: \PPCCompetencia{\espec}{nome}/\PPCCompetencia{\espec}{descrição}
+            }
+        \end{itemize}
+    }
+\end{itemize}
 
 \end{document}
