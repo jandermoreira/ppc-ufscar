@@ -3,10 +3,10 @@
 # Jander, 2025
 
 # pcc-ufscar
-#arqsppc=$(echo ppc-ufscar.{sty,cls} ppc-ufscar-*.code.tex)
-#for f in $arqsppc; do
-#  argumentos=$(echo $argumentos --diff $f ~/graduacao/ppc-bia-2025/$f)
-#done
+arqsppc=$(echo ppc-ufscar.{sty,cls} ppc-ufscar-*.code.tex)
+for f in $arqsppc; do
+  argumentos=$(echo $argumentos --diff $f ~/graduacao/ppc-bia-2025/$f)
+done
 
 # attrtoolbox
 arqsattr=attrtoolbox.sty
