@@ -13,6 +13,12 @@
 \RequirePackage{attrtoolbox}
 \RequirePackage{xcolor}
 \RequirePackage{pgf}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{url}
+\RequirePackage{hyperref}
+\Urlmuskip=0mu plus 1mu
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -223,6 +229,9 @@
 % #2: lista separada por vírgulas com atributos e seus valores (atributo = {valor})
 \NewDocumentCommand{\PPCDefinaDisciplina}{ m >{ \TrimSpaces } m }{%
     \ATClassSet{#1}{#2}%
+    \ATListCreate{#1-pré-requisitos}
+    \ATAttributeGetTo[#1]{\ppc@local@Lista}{pré-requisitos}
+    \ATListAppendItemsFrom{#1-pré-requisitos}{\ppc@local@Lista}
     \ppc@ObtenhaCargaDisciplina{\ppc@local@Total}{#1}%
     \csedef{ppc@local@TotalHoras}{horas total = \ppc@local@Total}%
     \ATClassSetFrom{#1}{\ppc@local@TotalHoras}%
@@ -599,5 +608,6 @@
 \input{ppc-ufscar-leiaute.code}
 \input{ppc-ufscar-grafico.code.tex}
 \input{ppc-ufscar-competencias.code.tex}
+\input{ppc-ufscar-ods.code.tex}
 
 \endinput
