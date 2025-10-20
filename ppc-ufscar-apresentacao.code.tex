@@ -6,16 +6,24 @@
 %% APRESENTAÇÃO DE INFORMAÇÕES
 
 \RequirePackage{titlesec}
+\RequirePackage{booktabs}
 \RequirePackage{array}
 \RequirePackage{float}
 \RequirePackage{etoolbox}
 \RequirePackage{multirow}
 \RequirePackage{ragged2e}
+\RequirePackage{tcolorbox}
+\RequirePackage{cleveref}
 
 % Quadros
-\floatstyle{plaintop}
 \newfloat{quadro}{H}{loq}[chapter]
 \floatname{quadro}{Quadro}
+\crefname{quadro}{quadro}{quadros}
+\Crefname{quadro}{Quadro}{Quadros}
+\AtBeginEnvironment{quadro}{
+    \setlength{\abovecaptionskip}{10pt}
+    \setlength{\belowcaptionskip}{10pt}
+}
 
 % PPCCapa: gera a página de capa
 \NewDocumentCommand{\PPCCapa}{}{
@@ -85,32 +93,51 @@
 
 % PPCFichaDisciplina: apresenta a descrição da disciplina
 % #1: id da disciplina
+\tcbset{
+    ficha disciplina/.style = {
+        sharp corners,
+        coltitle = .,
+        colbacktitle = white,
+        colback = white,
+        boxrule = 0.4pt,
+        left = 0pt,
+        right = 0pt,
+    }
+}
 \NewDocumentCommand{\PPCFichaDisciplina}{ m }{
     \begingroup
     \singlespacing
     \noindent
-    \begin{tabular}{>{\bfseries\raggedright}p{0.25\linewidth}<{:}p{0.70\linewidth}}
-        \hline
-        Nome                      & \textbf{\PPCDisciplina{#1}{nome}}             \\
-        \hline
-        Código                    & \PPCDisciplina{#1}{código}                    \\
-        \hline
-        Objetivo                  & \PPCDisciplina{#1}{objetivo}                  \\
-        \hline
-        Ementa                    & \PPCDisciplina{#1}{ementa}                    \\
-        \hline
-        Carga horária &
-        \ATForEach{\TipoHora}{teóricas, práticas, extensionistas, estágio}[{ e }{, }{ e }{}]{\PPCDisciplina{#1}{horas \TipoHora}h \TipoHora} \\
-        \hline
-        Departamento responsável  & \PPCDisciplina{#1}{departamento}              \\
-        \hline
-        Bibliografia básica       & \PPCDisciplina{#1}{bibliografia básica}       \\
-        \hline
-        Bibliografia complementar & \PPCDisciplina{#1}{bibliografia complementar} \\
-        \hline
-        Competências              & \textit{A ser feito\ldots}                    \\
-        \hline
-    \end{tabular}
+    \begin{tcolorbox}[
+        ficha disciplina,
+        title = {\textbf{\PPCDisciplina{#1}{nome}}}\hfill\large\texttt{\PPCDisciplina{#1}{código}}
+    ]
+        \begin{tabular}{>{\bfseries\raggedright}p{0.25\linewidth}p{0.70\linewidth}}
+            Caráter:                   & \ATAttributeIfExist[#1]{caráter}{\PPCDisciplina{#1}{caráter}}{\textit{Indefinido}}                   \\
+            \hline
+            Objetivo:                  & \PPCDisciplina{#1}{objetivo}                  \\
+            \hline
+            Ementa:                    & \PPCDisciplina{#1}{ementa}                    \\
+            \hline
+            Carga horária: &
+            \ATForEach{\TipoHora}{teóricas, práticas, extensionistas, estágio}[{ e }{, }{ e }{}]{\TipoHora:~\PPCDisciplina{#1}{horas \TipoHora}h} \\
+            \hline
+            Departamento responsável:  & \PPCDisciplina{#1}{departamento}              \\
+            \hline
+            Pré-requisitos: &
+            \ATListForEach{#1-pré-requisitos}{\prereq}[{ e }{ e }{, }{}]{%
+                \ATAttributeIfExist[#1]{código}{\PPCDisciplina{#1}{código}--}{}%
+                \ATAttributeIfExist[#1]{nome abreviado}{\PPCDisciplina{#1}{nome abrevidado}}{\PPCDisciplina{\prereq}{nome}}%
+            }
+            \\
+            \hline
+            Bibliografia básica:       & \PPCDisciplina{#1}{bibliografia básica}       \\
+            \hline
+            Bibliografia complementar: & \PPCDisciplina{#1}{bibliografia complementar} \\
+            \hline
+            Competências:              & \PPCDisciplina{#1}{competências}              \\
+        \end{tabular}
+    \end{tcolorbox}
     \endgroup
 }
 
