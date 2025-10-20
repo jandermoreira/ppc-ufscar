@@ -140,6 +140,7 @@ Centro: \PPCInfo{centro}
 
 \subsubsection*{Lista geral}
 \begin{itemize}
+    \item Start
     \ATForEach{\Disc}{astro-fic-avanc, hist-alt-ext, ling-fic, tec-fic,
         bio-sint, antrop-fic,
         geo-fic, med-fic-ext, robot-fic, eco-fic, mus-fic-avanc,
@@ -230,7 +231,7 @@ Total disponível em eletivas: \PPCCargaHoraria{eletiva}h.
     eco-fic-avanc, med-fic-ext2, robot-fic-avanc, tec-fic-ext,
     astro-fic-avanc, hist-alt-avanc, tcc
 }{
-    \PPCFichaDisciplina{\Id}\clearpage
+    \PPCFichaDisciplina{\Id}%\clearpage
 }
 
 
@@ -247,13 +248,13 @@ Total disponível em eletivas: \PPCCargaHoraria{eletiva}h.
     },
 }
 
-% \begin{landscape}
-%     \PPCMatrizCurricular
-%
-%     \PPCMatrizCurricular<cor fundo optativa = magenta!40, visão do aluno>
-%
-%     \PPCMatrizCurricular[trilha1]<>
-% \end{landscape}
+\begin{landscape}
+    % \PPCMatrizCurricular
+
+    \PPCMatrizCurricular<visão do aluno>
+
+    % \PPCMatrizCurricular[trilha1]<>
+\end{landscape}
 
 
 \chapter{Períodos}
