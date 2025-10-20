@@ -187,13 +187,13 @@
             \colorlet{cor horas}{cor horas optativa}%
             \colorlet{cor gradiente}{cor gradiente optativa}%
         }{%
-            \csedef{ppg@local@Carater}{\ATAttributeGet[#1]{caráter}}
+            \ATAttributeGetTo[#1]{\ppg@local@Carater}{caráter}
             \PackageError{ppc-ufscar}{Caráter inválido para #1 (\ppg@local@Carater); válidos: obrigatório ou optativo.}
         }%
     }%
     \begin{tikzpicture}
         \node[caixa disciplina] (caixa disciplina) {};
-        \node[nome disciplina] at ($(caixa disciplina.south)!0.65!(caixa disciplina.north)$) (nome disciplina) {\ATAttributeIfExist[#1]{nome abreviado}{\PPCDisciplina{#1}{nome abreviado}}{\PPCDisciplina{#1}{nome}}};
+        \node[nome disciplina] at ($(caixa disciplina.south)!0.65!(caixa disciplina.north)$) (nome disciplina) { \ATAttributeIfExist[#1]{nome abreviado}{\PPCDisciplina{#1}{nome abreviado}}{\PPCDisciplina{#1}{nome}}};
         \coordinate (horas) at ($(caixa disciplina.south west) + (0, 0.05cm)$);
         \foreach \prefixo/\horas in {
             T:/teóricas, P:/práticas, Ext:/extensionistas, Est:/estágio%
