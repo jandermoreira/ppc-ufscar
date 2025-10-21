@@ -5,15 +5,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% CONFIGURAÇÕES DE LEIAUTE
 
-\RequirePackage{hyperref}
-\RequirePackage{titlesec}
+\RequirePackage[all]{nowidow}
 \RequirePackage{enumitem}
 \RequirePackage{etoolbox}
+\RequirePackage{geometry}
+\RequirePackage{hyperref}
 \RequirePackage{pdflscape}
+\RequirePackage{setspace}
+\RequirePackage{textcomp}
+\RequirePackage{titlesec}
+
+% Geometria
+\geometry{left = 2.5cm, right = 2cm, top = 2cm, bottom = 2cm}
+\newlength{\ppc@BaselineSkip}
+\setlength{\ppc@BaselineSkip}{\baselineskip} % para uso em gráficos
 
 
 % Parágrafos
 \setlength{\parindent}{1.5cm}
+\onehalfspacing
 
 % Cores para os links
 \hypersetup{

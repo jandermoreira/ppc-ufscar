@@ -11,15 +11,8 @@
 
 %
 % Leiaute
-\RequirePackage{etoolbox}
-\RequirePackage{textcomp}
-\RequirePackage[all]{nowidow}
-\RequirePackage{geometry}
-\RequirePackage{setspace}
-\geometry{left = 2.5cm, right = 2cm, top = 2cm, bottom = 2cm}
-\newlength{\ppc@BaselineSkip}
-\setlength{\ppc@BaselineSkip}{\baselineskip} % para uso em gráficos
-\onehalfspacing
+\input{ppc-ufscar-leiaute.code}
+
 
 %
 % Funcionalidades
