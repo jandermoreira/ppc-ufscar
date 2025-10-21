@@ -16,14 +16,27 @@
 \RequirePackage{cleveref}
 
 % Quadros
-\newfloat{quadro}{H}{loq}[chapter]
+\ifdef{\thechapter}{
+    \newfloat{quadro}{H}{loq}[chapter]
+}{
+    \newfloat{quadro}{H}{loq}
+}
 \floatname{quadro}{Quadro}
-\crefname{quadro}{quadro}{quadros}
-\Crefname{quadro}{Quadro}{Quadros}
 \AtBeginEnvironment{quadro}{
     \setlength{\abovecaptionskip}{10pt}
     \setlength{\belowcaptionskip}{10pt}
 }
+
+% Referências cruzadas
+\crefname{quadro}{quadro}{quadros}
+\Crefname{quadro}{Quadro}{Quadros}
+\crefname{table}{tabela}{tabelas}
+\Crefname{table}{Tabela}{Tabelas}
+\crefname{figure}{figura}{figuras}
+\Crefname{figure}{Figura}{Figuras}
+\crefname{section}{seção}{seções}
+\Crefname{section}{Seção}{Seções}
+
 
 % PPCCapa: gera a página de capa
 \NewDocumentCommand{\PPCCapa}{}{
