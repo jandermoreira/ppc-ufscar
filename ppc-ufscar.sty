@@ -20,7 +20,6 @@
 \Urlmuskip=0mu plus 1mu
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % OPÇÕES
 \ExplSyntaxOn
@@ -80,11 +79,10 @@
     \bool_if:cTF { #1  } { #2 } { #3 }
 }
 
-\ExplSyntaxOn
+
 \NewDocumentCommand{\ppc@IntUse}{ m }{
     \int_use:N #1
 }
-\ExplSyntaxOff
 
 
 \@ifclassloaded{report}{}{
@@ -281,14 +279,15 @@
         \tl_use:c { g_at_ #2 _ horas~estágio _tl }
     }
 }
+
 \NewDocumentCommand{\ppc@ObtenhaCargaDisciplina}{ m m }{
     \ppc_obtenha_carga_disciplina:Nn \l_tmpa_int { #2 }
     \def#1{\int_use:N \l_tmpa_int}
 }
 
 % PPCCargaHoraria: retorna um dos contadores de carga horária
-% #1: (optional) star: volta vazio se igual a zero
-% #2: nome da matriz
+% #1: (opcional) star: volta vazio se igual a zero
+% #2: (opcional) nome da matriz
 % #3: nome do contador
 \NewDocumentCommand{\PPCCargaHoraria}{ s O {matriz-principal} m O{} }{
     \IfBooleanTF{#1}{
@@ -577,7 +576,7 @@
 }
 
 % PPCParaCadaPeriodo
-% #1:(opcional) nome da matriz
+% #1: (opcional) nome da matriz
 % #2: macro com o número do período
 % #3: código a ser executado
 \cs_new:Npn \ppc_para_cada_periodo:nnn #1#2#3 {
@@ -605,7 +604,6 @@
 }
 
 \input{ppc-ufscar-apresentacao.code}
-\input{ppc-ufscar-leiaute.code}
 \input{ppc-ufscar-grafico.code.tex}
 \input{ppc-ufscar-competencias.code.tex}
 \input{ppc-ufscar-ods.code.tex}
