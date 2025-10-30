@@ -25,6 +25,8 @@
 \usepackage{ppc-ufscar}
 \usepackage{hvlogos}
 \usepackage{todonotes}
+\usepackage{fontawesome5}
+\NewDocumentCommand{\Alerta}{ m }{\noindent\textcolor{red!80!black}{\faExclamationTriangle}~\textit{#1}\bigskip\par}
 
 \title{
     A classe \PackageName{ppc-ufscar}\\
@@ -37,19 +39,21 @@
 \begin{document}
 \maketitle
 
+\hypersetup{urlcolor = blue!70!black}
+
 \PDNewVersion{0.1}{2025-04-25}
 \PDAddChange{0.1}{
     description = Versão inicial.,
     no page,
     no box,
 }
-\PDPrintChanges
+\PDPrintChanges<Histórico de versões>
 
 
 \section{Introdução}
 Esta classe é o resultado do trabalho realizado nas reformulações dos cursos de Bacharelado em Engenharia da Computação e Bacharelado da Ciência da Computação em 2024. Durante a elaboração do documento, um mecanismo mais robusto para ``automatizar'' certas partes da escrita foram necessários.
 
-Ao se escrever um PPC, muitas informações são repetidas à exaustão: o nome de uma disciplina aparece na grade curricular, na listagem de disciplinas por período e na lista de ementas, entre outros locais. Além disso, ``pequenas'' alterações, como mudar uma disciplina de período gera implicações em diversas outras partes do documento, como no quadro de disciplinas por período, total de horas do período etc.
+Ao se escrever um PPC, muitas informações são repetidas à exaustão: o nome de uma atividade aparece na grade curricular, na listagem de atividades por período e na lista de ementas, entre outros locais. Além disso, ``pequenas'' alterações, como mudar uma atividade de período gera implicações em diversas outras partes do documento, como no quadro de atividades por período, total de horas do período etc.
 
 As ferramentas disponibilizadas aqui têm, portanto, o objetivo de facilitar essa organização, de forma que as alterações sejam feitas em um só local e seus efeitos sejam propagados para onde forem necessários.
 
@@ -74,7 +78,7 @@ A classe será disponibilizada no CTAN\footnote{\url{https://ctan.org}.} quando 
 
 
 \section{A filosofia no uso das ferramentas}
-Todo PPC tem vários elementos em comum, como capa, descrição de dados institucionais, ficha descritiva do curso, matriz curricular (grade de disciplinas), informações sobre a disciplinas (código, nome, ementa etc.) e muitos outros.
+Todo PPC tem vários elementos em comum, como capa, descrição de dados institucionais, ficha descritiva do curso, matriz curricular (grade de atividades), informações sobre a atividades (código, nome, ementa etc.) e muitos outros.
 
 Os elementos de suporte à organização são apresentados na \Cref{tab:elementos}.
 
@@ -91,8 +95,8 @@ Os elementos de suporte à organização são apresentados na \Cref{tab:elemento
         Dados institucionais &
         Neste contexto, os dados institucionais se referem às informações das pessoas envolvidas: nome do reitor, do pró-reitor de graduação, diretor de centro, coordenador de curso e membros do NDE, por exemplo. Para isso é usado o comando \Macro{PPCDefinaDadosInstitucionais} e pode ser gerada a página com essa listagem. (\Cref{sec:apresentacao-institucional})
         \\
-        Descrição das disciplinas &
-        Cada disciplina deve ter sua descrição completa, o que é feito com o comando \Macro{PPCDefinaDisciplina}. Por padrão, cada disciplina é definida em um arquivo separado (facilita a organização, a edição e controle de alterações), mas nada impede que as definições sejam feitas conforme as necessidades de quem escreve o documento. Se postas em arquivos, elas podem ser importadas para o documento principal com \Macro{PPCImporteDisciplinas}. Com essas informações as fichas de cada disciplina podem ser geradas. Essa definição tem que, necessariamente, ser feita antes da definição da matriz curricular. (\Cref{sec:definicao-de-disciplina})
+        Descrição das atividades &
+        Cada atividade deve ter sua descrição completa, o que é feito com o comando \Macro{PPCDefinaAtividade}. Por padrão, cada atividade é definida em um arquivo separado (facilita a organização, a edição e controle de alterações), mas nada impede que as definições sejam feitas conforme as necessidades de quem escreve o documento. Se postas em arquivos, elas podem ser importadas para o documento principal com \Macro{PPCImporteAtividades}. Com essas informações as fichas de cada disciplina podem ser geradas. Essa definição tem que, necessariamente, ser feita antes da definição da matriz curricular. (\Cref{sec:definicao-de-disciplina})
         \\
         Matriz curricular &
         A definição da matriz corresponde à organização das disciplinas no curso. Permite especificar as disciplinas por área, além de indicar a carga de optativas e listar possíveis eletivas. Usando \Macro{PPCDefinaMatrizCurricular}, são listadas as disciplinas período por período e indicando quais são obrigatórias e quais são optativas. Essa definição permite saber o número de períodos, quais são as disciplinas do curso e seu caráter, quais são as áreas, determinar a carga horária total e por período. A partir dela é gerada o elemento gráfico grade curricular e as listagens de disciplinas por período. \\
@@ -200,15 +204,15 @@ A apresentação da ficha pode ser feita manualmente com \MacroRef{PPCDadosInsti
 
 \subsection{Definição de disciplinas}\label{sec:definicao-de-disciplina}
 
-Cada disciplina deve ser especificada usando-se \Macro{PPCDefinaDisciplina}. O primeiro parâmetro é o identificador da disciplina, usualmente um apelido comum, como \PDInline{tcc} para \textit{Trabalho de Conclusão de Curso}, por exemplo.
+Cada disciplina deve ser especificada usando-se \Macro{PPCDefinaAtividade}. O primeiro parâmetro é o identificador da disciplina, usualmente um apelido comum, como \PDInline{tcc} para \textit{Trabalho de Conclusão de Curso}, por exemplo.
 
-\begin{Macrodef}{PPCDefinaDisciplina}{\MArg{id-disciplina}\MArg{lista-atributos}}{}
+\begin{Macrodef}{PPCDefinaAtividade}{\MArg{id-disciplina}\MArg{lista-atributos}}{}
     Define uma disciplina com identificador \Argument{id-disciplina} e usando \Argument{lista-atributos} para determinar os valores de cada atributo.
 
 \end{Macrodef}
 
 \begin{PDExample}
-    \PPCDefinaDisciplina{cálculo1}{
+    \PPCDefinaAtividade{cálculo1}{
         nome = {Cálculo Diferencial e Integral 1},
         pré-requisitos = {algelin},
         horas teóricas = 60,
@@ -216,7 +220,7 @@ Cada disciplina deve ser especificada usando-se \Macro{PPCDefinaDisciplina}. O p
         horas extensionistas = 0,
         horas estágio = 0,
     }
-    A disciplina \PPCDisciplina{cálculo1}{nome} possui carga horária total de \PPCDisciplina{cálculo1}{horas total}\,h.
+    A disciplina \PPCAtividade{cálculo1}{nome} possui carga horária total de \PPCAtividade{cálculo1}{horas total}\,h.
 \end{PDExample}
 
 Alguns atributos merecem destaque, sendo apresentados na \Cref{tab:atributos-disciplinas}.
@@ -238,7 +242,7 @@ Alguns atributos merecem destaque, sendo apresentados na \Cref{tab:atributos-dis
         Esse atributo é opcional e pode ser omitido. Quando existir, ele é usado no nome da disciplina na apresentação gráfica da matriz curricular (\MacroRef{PPCMatrizCurricular}). Assim, nomes mais longos de disciplinas podem ter uma versão mais curta para que caibam nos espaços reservados. Siglas significativas também podem ser usadas, como TCC.
         \\
         \PDInline{horas teóricas}, \PDInline{horas práticas}, \PDInline{horas extensionistas} e \PDInline{horas estágio} &
-        Esses atributos são obrigatórios e, a partir deles, o atributo \PDInline{horas total} é automaticamente calculado e incluído na descrição da disciplina. Terminada a definição de uma disciplina, \MacroRef{PPCDisciplina}\MArg{id}\PArg{horas total} pode ser usado.
+        Esses atributos são obrigatórios e, a partir deles, o atributo \PDInline{horas total} é automaticamente calculado e incluído na descrição da disciplina. Terminada a definição de uma disciplina, \MacroRef{PPCAtividade}\MArg{id}\PArg{horas total} pode ser usado.
         \\
     \end{tabular}
 \end{table}
@@ -286,7 +290,7 @@ Segue um exemplo de matriz, o qual será abordado por partes.
         },
         área = {estagio-tcc}{
             nome = {Estágio ou TCC},
-            8 = {estagio, tcc},
+            8 = {-estagio, -tcc, +360},
         },
         carga optativas = {
             4 = {60},
@@ -294,14 +298,11 @@ Segue um exemplo de matriz, o qual será abordado por partes.
             8 = {60, 60},
         },
         eletivas = {geo-hist, astro-elem},
-        carga a compensar = {
-            8 = 360,
-        }
     }
 \end{PDListing}
 
-\subsubsection*{Nome e número de períodos}
-O curso é organizado por períodos letivos. No exemplo é definido um curso de oito trimestres.
+\subsubsection{Nome e número de períodos}
+O curso é organizado por períodos letivos. No exemplo, é definido um curso de oito trimestres.
 
 \begin{PDListing}
     nome período = {trimestre},
@@ -310,7 +311,7 @@ O curso é organizado por períodos letivos. No exemplo é definido um curso de 
 
 O texto ``trimestre'' é usado na apresentação das tabelas de disciplinas por trimestre apenas.
 
-\subsubsection*{Áreas}
+\subsubsection{Áreas}
 O curso é organizado em quatro grandes áreas: Terra, Fogo, Água e Ar.
 
 Para a área da água, seu identificador é \PDInline{hidro} e seu \PDInline{nome} é ``Ciências da Água''. Essa área não possui disciplinas nos trimestres 1, 4, 6 ou 8, mas tem duas disciplinas no segundo trimestre, uma no terceiro, três no quinto e uma no sétimo.
@@ -329,9 +330,27 @@ Para a área da água, seu identificador é \PDInline{hidro} e seu \PDInline{nom
 \index{disciplinas!optativas}
 \index{obrigatórias}
 \index{disciplinas!obrigatórias}
-Em particular, as disciplinas \PDInline{crio-fund} e \PDInline{hidro-geo} são marcadas como optativas, o que é indicado pelo asterisco que precede o identificador. Disciplinas sem o asterisco são consideradas obrigatórias. Sempre que uma disciplina é incluída na matriz, seu atributo \PDInline{caráter} é ajustado para \PDInline{Obrigatório} ou \PDInline{Optativo}.
+A especificação da lista de disciplinas é feita pelos identificadores usados na definição da disciplina. Eles podem ser prefixados para modificar como a disciplina é interpretada, como descrito na \Cref{tab:prefixos-disciplinas}.
 
-\subsubsection*{Carga de optativas}
+\begin{table}[H]
+    \caption{Prefixos usados nas listas de disciplinas.}
+    \label{tab:prefixos-disciplinas}
+    \centering
+    \begin{tabular}{>{\centering\arraybackslash}p{0.25\linewidth}>{\RaggedRight\arraybackslash}p{0.65\linewidth}}
+        \hfill\textbf{Prefixo}\hfill\null & \hfill\textbf{Descrição}\hfill\null                                                                                                                                                                          \\
+        \cmidrule(lr){1-1} \cmidrule(lr){2-2} \\
+        \textit{sem prefixo}              & A disciplina é considerada obrigatória e seu atributo \PDInline{caráter} é ajustado de acordo e sua carga horária é contabilizada.                                                                           \\
+        \PDInline{*} (asterisco)          & A disciplina é marcada como optativa, seu \PDInline{caráter} é ajustado para \PDInline{Optativo} e sua carga horária é desconsiderada. A carga das optativas está descrita na \Cref{sec:carga-de-optativas}. \\
+        \PDInline{-} (menos)              & A disciplina é considerada como obrigatória, porém sua carga horária não é contabilizada. Veja a \Cref{sec:compensacao-carga-horaria} para detalhes.
+    \end{tabular}
+\end{table}
+
+\Alerta{Não deve haver espaços entre o prefixo e o identificador da disciplina.}
+
+\bigskip
+No exemplo, as disciplinas \PDInline{crio-fund} e \PDInline{hidro-geo} são marcadas como optativas, o que é indicado pelo asterisco que precede o identificador. Atividades sem o asterisco são consideradas obrigatórias. Sempre que uma disciplina é incluída na matriz, seu atributo \PDInline{caráter} é ajustado para \PDInline{Obrigatório} ou \PDInline{Optativo}.
+
+\subsubsection{Carga de optativas}\label{sec:carga-de-optativas}
 Em um determinado período do curso, várias optativas podem ser oferecidas. No exemplo dado, são ofertadas cinco disciplinas optativas no 6º trimestre. Porém, é esperado que o aluno cumpra três delas para integralizar sua carga horária.
 
 A carga de optativas é especificada no atributo \PDInline{carga optativas}, que estabelece uma lista de número de horas, um por disciplina.
@@ -346,7 +365,21 @@ A carga de optativas é especificada no atributo \PDInline{carga optativas}, que
 
 A contabilização da carga horária do período é a soma das obrigatórias com a soma das cargas das optativas listadas. (Ver \Macro{PPCCargaHoraria}.)
 
-\subsubsection*{Relação de eletivas}
+\subsubsection{Compensação de carga horária}\label{sec:compensacao-carga-horaria}
+Para uma situação específica de um curso, o aluno poderia optar por fazer estágio ou o trabalho de conclusão de curso. Colocar ambos na grade era necessário e as duas deveriam ser indicadas como obrigatórias,  mas a contabilização de apenas um deles deveria ser feita.
+
+Para essa situação, o identificador da disciplina pode ser precedido de um sinal de menos (\PDInline{-}), o que faz com que a disciplina seja incluída na grade como obrigatória, mas desconsiderando sua carga horária. Para dar suporte para compensar uma determinada quantidade de horas, ela pode ser incluída na lista do semestre na forma \PDInline{+}$n$ (e.g, \PDInline{+120}) para acrescentar manualmente $n$~horas à carga horária.
+
+No exemplo, \PDInline{estagio} e \PDInline{tcc} seriam disciplinas com 360\,h de carga horária cada uma. A ``área'' de estágio e TCC as inclui como obrigatórias, sem contabilizar as horas de nenhuma delas. Manualmente são incluídas 360\,h no período.\footnote{Naturalmente, \PDInline{8 = {-estagio, tcc}} teria o mesmo efeito final.}
+
+\begin{PDListing}
+    área = {estagio-tcc}{
+        nome = {Estágio ou TCC},
+        8 = {-estagio, -tcc, +360},
+    },
+\end{PDListing}
+
+\subsubsection{Relação de eletivas}
 
 \index{eletivas}
 \index{disciplinas!eletivas}
@@ -357,21 +390,6 @@ Caso seja necessário, uma lista com disciplinas eletivas selecionadas pode ser 
 \end{PDListing}
 
 Essa listagem atualiza a contagem de horas de eletivas (ver \Macro{PPCCargaHoraria}).
-
-\subsubsection*{Compensação de carga horária}\label{sec:compensacao-carga-horaria}
-Para uma situação específica de um curso, o aluno poderia optar por fazer estágio ou o trabalho de conclusão de curso. Colocar ambos na grade era necessário e as duas deveriam ser indicadas como obrigatórias,  mas a contabilização de apenas um deles deveria ser feita. Neste caso, o atribuito \PDInline{carga a compensar} indica, para cada período, um valor em horas que deve ser subtraído do total.
-
-No exemplo, \PDInline{estagio} e \PDInline{tcc} seriam disciplinas com 360\,h de carga horária cada uma. A ``área'' de estágio e TCC as inclui como obrigatórias, somando 720\,h no total, mas a carga de uma delas é compensada deixando o total de horas do curso e do período coerentes.
-
-\begin{PDListing}
-    área = {estagio-tcc}{
-        nome = {Estágio ou TCC},
-        8 = {estagio, tcc},  % 2x 360h
-    },
-    carga a compensar = {
-        8 = 360,  % compensa as 360h
-    }
-\end{PDListing}
 
 
 \section{Descrição de recursos escrita}
@@ -390,8 +408,8 @@ No exemplo, \PDInline{estagio} e \PDInline{tcc} seriam disciplinas com 360\,h de
     O curso pertence ao \PPCInfo{centro} e foi criado em em \PPCInfo{ano}.
 \end{PDExample}
 
-\begin{Macrodef}{PPCDisciplina}{\MArg{id-disciplina}\MArg{atributo}}{}
-    Resulta no \Argument{atributo} da disciplina \Argument{id-disciplina} especificado com \MacroRef{PPCDefinaDisciplina}.
+\begin{Macrodef}{PPCAtividade}{\MArg{id-disciplina}\MArg{atributo}}{}
+    Resulta no \Argument{atributo} da disciplina \Argument{id-disciplina} especificado com \MacroRef{PPCDefinaAtividade}.
 \end{Macrodef}
 
 
@@ -421,9 +439,13 @@ Os diversos atributos podem ser, ainda, manipulados conforme descrito no pacote 
     O \Argument{nome-matriz} pode ser usado caso mais de uma matriz seja criada.
 \end{Macrodef}
 
+\subsection{Usando várias matrizes curriculares}
+
+\Alerta{\textbf{Importante:} A modificação do caráter de uma disciplina (de optativa para obrigatória ou vice-versa) em uma segunda matriz, implica na alteração permanente da configuração da disciplina\footnote{O uso de grupos do \LaTeX\ não foram testados e podem, em princípio, evitar essa modificação.}. Em quaisquer listagens ou gráficos, o novo caráter será usado, independentemente da matriz escolhida.}
+
 \subsection{Automatização de processamento}
 
-\subsubsection*{Específicas para o PPC}
+\subsubsection{Específicas para o PPC}
 
 \begin{Macrodef}{PPCParaCadaPeriodo}{\OArg{nome-matriz}\MArg{macro}\MArg{código}}{}
     Esta macro permite a execução de um dado \Argument{código} para cada um dos períodos de uma matriz curricular. Em cada repetição, o número do período é armazenado em \Argument{macro}.
@@ -431,9 +453,9 @@ Os diversos atributos podem ser, ainda, manipulados conforme descrito no pacote 
     O \Argument{nome-matriz} pode ser usado caso mais de uma matriz seja criada.
 \end{Macrodef}
 
-\subsection{Mais}
+\subsection{O pacote \PDInline{attrtoolbox}}
 
-\subsubsection*{Genéricas}
+\subsubsection{Genéricas}
 O controle de informações usa o pacote \PDInline{attrtoolbox}\footnote{Ainda em desenvolvimento e não publicado. Projeto disponível no \href{https://github.com/jandermoreira/attrtoolbox}{Github}.} e seus recursos ficam disponibilizados.
 
 Alguns desses recursos podem ser destacados:
@@ -443,6 +465,17 @@ Alguns desses recursos podem ser destacados:
     \item \Macro{ATAttributeIfExist}
     \item \Macro{ATAttributeIfEqual}
     \item \ldots
+\end{itemize}
+
+\subsection{Listas disponíveis}
+Várias listas são criadas com os dados fornecidos.
+
+\begin{itemize}
+    \item Todas as disciplinas
+    \item Todas as obrigatórias do período
+    \item Todas as optativas do período
+    \item Todas as eletivas
+    \item etc
 \end{itemize}
 
 
@@ -462,8 +495,8 @@ Alguns desses recursos podem ser destacados:
     Quando usada a classe \PackageName{ppc-ufscar.cls}, ela é criada automaticamente, exceto se a opção \OptionRef{dados institucionais} for ajustada para \PDInline{false}.
 \end{Macrodef}
 
-\begin{Macrodef}{PPCFichaDisciplina}{\MArg{id-disciplina}}{}
-    \Macro{PPCFichaDisciplina} gera a ficha descritiva padrão de uma disciplina identificada por \Argument{id-disciplina}.
+\begin{Macrodef}{PPCFichaAtividade}{\MArg{id-disciplina}}{}
+    \Macro{PPCFichaAtividade} gera a ficha descritiva padrão de uma disciplina identificada por \Argument{id-disciplina}.
 \end{Macrodef}
 
 
@@ -490,7 +523,7 @@ Para as apresentações de dados, o ambiente \EnvironmentDef{quadro} é disponib
 
 \subsection{Opções para as informações padronizadas}
 
-\subsubsection*{Capa, dados institucionais e ficha da disciplina}
+\subsubsection{Capa, dados institucionais e ficha da disciplina}
 Quando o documento é criado usando a classe \PDInline{ppc-ufscar} (com \Macro{documentclass}\PArg{ppc-ufscar}), as folhas de capa, dos dados institucionais e da ficha descritiva são automaticamente criados. Estas opções devem ser especificadas ainda no preâmbulo do documento (antes de \PDInline{\begin{document}}).
 
 Essas opções são definidas com \Macro{PPCConfig}.
@@ -521,7 +554,7 @@ Assim, caso seja necessário suprimir algumas das páginas, as opções \OptionR
         % a relação dos dados institucionais não é alterada!
 \end{PDListing}
 
-\subsubsection*{Opções para a apresentação gráfica da matriz curricular}
+\subsubsection{Opções para a apresentação gráfica da matriz curricular}
 A aparência da apresentação pode ser modificada segundo uma série de opções. Essas opções podem ser definidas com \MacroRef{PPCGraficos}, quando têm validade no texto todo, ou especificadas nas opções de \MacroRef{PPCMatrizCurricular}, sendo aplicadas somente ao gráfico gerado.
 
 \begin{Macrodef}{PPCGraficos}{\MArg{lista-de-opções}}{}
@@ -626,11 +659,11 @@ A aparência da apresentação pode ser modificada segundo uma série de opçõe
 
 
 \section{Competências}
-\textit{A fazer\ldots}
+\textit{Ainda cozinhando\ldots}
 
 
 \section{Objetivos de Desenvolvimento Sustentável (ODS)}
-\textit{A fazer\ldots}
+\textit{Ainda cozinhando\ldots}
 
 
 \section{Ainda por fazer}
@@ -641,6 +674,10 @@ Esta é uma \textit{lista de desejos} que podem ou não ser concretizados no fut
     \item Geração de grade de disciplinas com conexões representando pré-requisitos.
     \item Pensar em uma solução melhor para o caso da compensação de horas (pág.~\pageref{sec:compensacao-carga-horaria}).
 \end{itemize}
+
+
+\section{Sugestões e problemas}
+Sugestões de melhorias, de novas funcionalidades e também erros ou inconsistências podem (e devem) ser reportados ao autor, preferencialmente nas \href{https://github.com/jandermoreira/ppc-ufscar/issues}{\textit{issues} do Github}.
 
 \printindex
 

@@ -21,10 +21,10 @@
 % #1: lista de opções separadas por vírgulas (chave = valor)
 \ExplSyntaxOn
 \keys_define:nn { graficos } {
-    largura~caixa .dim_set:N = \ppc@LarguraCaixaDisciplina,
-    altura~caixa .dim_set:N = \ppc@AlturaCaixaDisciplina,
+    largura~caixa .dim_set:N = \ppc@LarguraCaixaAtividade,
+    altura~caixa .dim_set:N = \ppc@AlturaCaixaAtividade,
     altura~nome~área .dim_set:N = \ppc@AlturaNomeArea,
-    separação .dim_set:N = \ppc@SeparacaoCaixasDisciplina,
+    separação .dim_set:N = \ppc@SeparacaoCaixasAtividade,
     cor~fundo~obrigatória .code:n = {\colorlet{cor~caixa~obrigatória}{#1}},
     cor~texto~obrigatória .code:n = {\colorlet{cor~texto~obrigatória}{#1}},
     cor~horas~obrigatória .code:n = {\colorlet{cor~horas~obrigatória}{#1}},
@@ -39,7 +39,7 @@
     fonte~texto .tl_set:N = \ppc@FonteTexto,
     fonte~horas .tl_set:N = \ppc@FonteHoras,
     fonte~período .tl_set:N = \ppc@FontePeriodo,
-    mostra~total~disciplina .bool_set:N = \ppc@MostraTotal,
+    mostra~total~atividade .bool_set:N = \ppc@MostraTotal,
     mostra~nome~área .bool_set:N = \ppc@MostraNomeArea,
     mostra~coluna~períodos .bool_set:N = \ppc@MostraColunaPeriodos,
     visão~do~aluno .bool_set:N = \ppc@VisaoDoAluno,
@@ -54,7 +54,7 @@
 \PPCGraficos{
     largura caixa = 4cm,
     altura caixa = 2.5cm,
-    altura nome área = 1.5cm,
+    altura nome área = 3.5\ppc@BaselineSkip,
     separação = 0.2cm,
     cor fundo obrigatória = blue!40,
     cor texto obrigatória = black,
@@ -70,7 +70,7 @@
     fonte texto = \sffamily\bfseries\small,
     fonte horas = \sffamily\bfseries\small,
     fonte período = \sffamily\bfseries\LARGE,
-    mostra total disciplina,
+    mostra total atividade,
     mostra nome área,
     mostra coluna períodos,
     visão do aluno = false,
@@ -89,12 +89,12 @@
         outer sep = 0pt,
         anchor = center,
     },
-    caixa disciplina/.style = {
+    caixa atividade/.style = {
         todos nós,
         inner sep = 0pt,
         fill = cor caixa,
-        text width = \ppc@LarguraCaixaDisciplina,
-        text height = \ppc@AlturaCaixaDisciplina,
+        text width = \ppc@LarguraCaixaAtividade,
+        text height = \ppc@AlturaCaixaAtividade,
         anchor = center,
     },
     caixa período/.style = {
@@ -103,15 +103,15 @@
         align = center,
         inner sep = 0pt,
         fill = cor fundo período,
-        text width = 0.5\ppc@LarguraCaixaDisciplina,
-        text height = \ppc@AlturaCaixaDisciplina,
+        text width = 0.5\ppc@LarguraCaixaAtividade,
+        text height = \ppc@AlturaCaixaAtividade,
         anchor = center,
     },
-    nome disciplina/.style = {
+    nome atividade/.style = {
         todos nós,
         anchor = center,
         align = center,
-        text width = \dimexpr 0.95\ppc@LarguraCaixaDisciplina - 0.3cm, % -2 * innersep
+        text width = \dimexpr 0.95\ppc@LarguraCaixaAtividade - 0.3cm, % -2 * innersep
         font = \ppc@FonteTexto,
         text = cor texto,
     },
@@ -125,7 +125,7 @@
         align = center,
         % rounded corners = 0.25cm,
         % draw = cor caixa,
-        text width = \dimexpr 0.25\ppc@LarguraCaixaDisciplina - 0.3cm,
+        text width = \dimexpr 0.25\ppc@LarguraCaixaAtividade - 0.3cm,
         font = \ppc@FonteHoras,
         text = cor horas,
     },
@@ -150,11 +150,11 @@
         todos nós,
         anchor = north west,
         inner sep = 0pt,
-        % inner sep = \ppc@SeparacaoCaixasDisciplinas,
+        % inner sep = \ppc@SeparacaoCaixasAtividades,
     },
 }
 
-\PPCDefinaDisciplina{ppc@optativa-fantasma}{
+\PPCDefinaAtividade{ppc@optativa-fantasma}{
     código = {},
     nome = {Optativa},
     objetivo = {},
@@ -172,9 +172,9 @@
 }
 
 
-% ppc@CaixaDisciplina: desenha a caixa da disciplina
-% #1: id da disciplina
-\NewDocumentCommand{\ppc@CaixaDisciplina}{ m }{%
+% ppc@CaixaAtividade: desenha a caixa da atividade
+% #1: id da atividade
+\NewDocumentCommand{\ppc@CaixaAtividade}{ m }{%
     \ATAttributeIfEqual[#1]{caráter}{Obrigatório}{%
         \colorlet{cor caixa}{cor caixa obrigatória}%
         \colorlet{cor texto}{cor texto obrigatória}%
@@ -192,18 +192,18 @@
         }%
     }%
     \begin{tikzpicture}
-        \node[caixa disciplina] (caixa disciplina) {};
-        \node[nome disciplina] at ($(caixa disciplina.south)!0.65!(caixa disciplina.north)$) (nome disciplina) { \ATAttributeIfExist[#1]{nome abreviado}{\PPCDisciplina{#1}{nome abreviado}}{\PPCDisciplina{#1}{nome}}};
-        \coordinate (horas) at ($(caixa disciplina.south west) + (0, 0.05cm)$);
+        \node[caixa atividade] (caixa atividade) {};
+        \node[nome atividade, xshift = -0.2cm] at ($(caixa atividade.south)!0.65!(caixa atividade.north)$) (nome atividade) { \ATAttributeIfExist[#1]{nome abreviado}{\PPCAtividade{#1}{nome abreviado}}{\PPCAtividade{#1}{nome}}};
+        \coordinate (horas) at ($(caixa atividade.south west) + (0, 0.05cm)$);
         \foreach \prefixo/\horas in {
             T:/teóricas, P:/práticas, Ext:/extensionistas, Est:/estágio%
         }{
-            \node[horas, \horas] at (horas) (ultima hora) {\PPCDisciplina{#1}{horas \horas}};
+            \node[horas, \horas] at (horas) (ultima hora) {\PPCAtividade{#1}{horas \horas}};
             \node[prefixo] at (ultima hora.north west) {\prefixo};
             \coordinate (horas) at (ultima hora.south east);
         }
-        \ppc@ObtenhaCargaDisciplina{\ppc@local@Carga}{#1}
-        \PPCIf{ppc@MostraTotal}{
+        \ppc@ObtenhaCargaAtividade{\ppc@local@Carga}{#1}
+        \PPCIf{MostraTotal}{
             \node[horas, anchor = south west, text = cor texto, scale = 0.95, align = right, inner xsep = 0.1cm] at (ultima hora.north west) (ultima hora) {\ppc@local@Carga h};
         }{}
         % \node[prefixo] at (ultima hora.north west) {Tot:};
@@ -230,20 +230,20 @@
 \newcounter{ppc@local@Maximo}
 \NewDocumentCommand{\ppc@CaixaArea}{ O{matriz-principal} m }{%
     \begin{tikzpicture}
-        \pgfdeclarelayer{disciplinas}
+        \pgfdeclarelayer{atividades-curriculares}
         \pgfdeclarelayer{áreas}
-        \pgfsetlayers{áreas, disciplinas, main}
+        \pgfsetlayers{áreas, atividades-curriculares, main}
 
-        % Disciplinas
-        \begin{pgfonlayer}{disciplinas}
+        % Atividades
+        \begin{pgfonlayer}{atividades-curriculares}
             \defcounter{ppc@local@Maximo}{0}
             \defcounter{ppc@local@Linha}{0}
             \providebool{ppc@ApresenteOptativa}
             \PPCParaCadaPeriodo[#1]{\periodo}{
                 \defcounter{ppc@local@Coluna}{0}
-                \ATListForEach{#1-#2-\periodo}{\disciplina}{
+                \ATListForEach{#1-#2-\periodo}{\atividade}{
                     \ifstrequal{#2}{periodo}{
-                        \ATAttributeIfEqual[\disciplina]{caráter}{Obrigatório}{
+                        \ATAttributeIfEqual[\atividade]{caráter}{Obrigatório}{
                             \booltrue{ppc@ApresenteOptativa}
                         }{
                             \boolfalse{ppc@ApresenteOptativa}
@@ -252,18 +252,18 @@
                         \booltrue{ppc@ApresenteOptativa}
                     }
                     \ifbool{ppc@ApresenteOptativa}{
-                        \node[nó limpo] at (\theppc@local@Coluna * \ppc@LarguraCaixaDisciplina + \theppc@local@Coluna * \ppc@SeparacaoCaixasDisciplina, \theppc@local@Linha * -\ppc@AlturaCaixaDisciplina - \theppc@local@Linha * \ppc@SeparacaoCaixasDisciplina
-                        ) {\ppc@CaixaDisciplina{\disciplina}};
+                        \node[nó limpo] at (\theppc@local@Coluna * \ppc@LarguraCaixaAtividade + \theppc@local@Coluna * \ppc@SeparacaoCaixasAtividade, \theppc@local@Linha * -\ppc@AlturaCaixaAtividade - \theppc@local@Linha * \ppc@SeparacaoCaixasAtividade
+                        ) {\ppc@CaixaAtividade{\atividade}};
                         \global\stepcounter{ppc@local@Coluna}
                     }{}
                 }
                 \ifstrequal{#2}{periodo}{
                     \ATListForEach{#1-carga-optativas-\periodo}{\cargahoraria}{
-                        \PPCDefinaDisciplina{ppc@optativa-fantasma}{
+                        \PPCDefinaAtividade{ppc@optativa-fantasma}{
                             horas teóricas = \cargahoraria,
                         }
-                        \node[nó limpo] at (\theppc@local@Coluna * \ppc@LarguraCaixaDisciplina + \theppc@local@Coluna * \ppc@SeparacaoCaixasDisciplina, \theppc@local@Linha * -\ppc@AlturaCaixaDisciplina - \theppc@local@Linha * \ppc@SeparacaoCaixasDisciplina
-                        ) {\ppc@CaixaDisciplina{ppc@optativa-fantasma}};
+                        \node[nó limpo] at (\theppc@local@Coluna * \ppc@LarguraCaixaAtividade + \theppc@local@Coluna * \ppc@SeparacaoCaixasAtividade, \theppc@local@Linha * -\ppc@AlturaCaixaAtividade - \theppc@local@Linha * \ppc@SeparacaoCaixasAtividade
+                        ) {\ppc@CaixaAtividade{ppc@optativa-fantasma}};
                         \global\stepcounter{ppc@local@Coluna}
                     }
                 }{}
@@ -276,17 +276,17 @@
         \end{pgfonlayer}
 
         \begin{pgfonlayer}{áreas}
-            % caixa com as disciplinas
-            \coordinate (caixa area sup esq) at (-\ppc@LarguraCaixaDisciplina/2 - \ppc@SeparacaoCaixasDisciplina, \ppc@AlturaCaixaDisciplina/2 + \ppc@SeparacaoCaixasDisciplina);
-            \coordinate (caixa area inf dir) at (\theppc@local@Maximo * \ppc@LarguraCaixaDisciplina - \ppc@LarguraCaixaDisciplina/2 + \theppc@local@Maximo * \ppc@SeparacaoCaixasDisciplina, -\theppc@local@Linha * \ppc@AlturaCaixaDisciplina - \theppc@local@Linha * \ppc@SeparacaoCaixasDisciplina - \ppc@AlturaCaixaDisciplina/2 - \ppc@SeparacaoCaixasDisciplina);
+            % caixa com as atividades
+            \coordinate (caixa area sup esq) at (-\ppc@LarguraCaixaAtividade/2 - \ppc@SeparacaoCaixasAtividade, \ppc@AlturaCaixaAtividade/2 + \ppc@SeparacaoCaixasAtividade);
+            \coordinate (caixa area inf dir) at (\theppc@local@Maximo * \ppc@LarguraCaixaAtividade - \ppc@LarguraCaixaAtividade/2 + \theppc@local@Maximo * \ppc@SeparacaoCaixasAtividade, -\theppc@local@Linha * \ppc@AlturaCaixaAtividade - \theppc@local@Linha * \ppc@SeparacaoCaixasAtividade - \ppc@AlturaCaixaAtividade/2 - \ppc@SeparacaoCaixasAtividade);
             \node[nó limpo, nome área, fit = (caixa area sup esq)(caixa area inf dir)] (caixa area) {};
 
             % caixa com o nome da área
-            \PPCIf{ppc@MostraNomeArea}{
-                \coordinate (caixa area inf esq) at (-\ppc@LarguraCaixaDisciplina/2 - \ppc@SeparacaoCaixasDisciplina, \ppc@AlturaCaixaDisciplina/2 + 2\ppc@SeparacaoCaixasDisciplina);
-                \coordinate (caixa area sup dir) at (\theppc@local@Maximo * \ppc@LarguraCaixaDisciplina - \ppc@LarguraCaixaDisciplina/2 + \theppc@local@Maximo * \ppc@SeparacaoCaixasDisciplina, \ppc@AlturaNomeArea + \ppc@AlturaCaixaDisciplina/2 + 2\ppc@SeparacaoCaixasDisciplina);
+            \PPCIf{MostraNomeArea}{
+                \coordinate (caixa area inf esq) at (-\ppc@LarguraCaixaAtividade/2 - \ppc@SeparacaoCaixasAtividade, \ppc@AlturaCaixaAtividade/2 + 2\ppc@SeparacaoCaixasAtividade);
+                \coordinate (caixa area sup dir) at (\theppc@local@Maximo * \ppc@LarguraCaixaAtividade - \ppc@LarguraCaixaAtividade/2 + \theppc@local@Maximo * \ppc@SeparacaoCaixasAtividade, \ppc@AlturaNomeArea + \ppc@AlturaCaixaAtividade/2 + 2\ppc@SeparacaoCaixasAtividade);
                 \node[nó limpo, nome área, fit=(caixa area inf esq)(caixa area sup dir)] (título) {};
-                \node[nome área, inner sep = 0.25cm, text width = \theppc@local@Maximo * \ppc@LarguraCaixaDisciplina + \theppc@local@Maximo * \ppc@SeparacaoCaixasDisciplina - 3\ppc@SeparacaoCaixasDisciplina] at (título) {\PPCArea[#1]{#2}{nome}};
+                \node[nome área, inner sep = 0cm, text width = \theppc@local@Maximo * \ppc@LarguraCaixaAtividade + \theppc@local@Maximo * \ppc@SeparacaoCaixasAtividade + \ppc@SeparacaoCaixasAtividade - 0.5em] at (título) {\PPCArea[#1]{#2}{nome}};
             }{}
         \end{pgfonlayer}
     \end{tikzpicture}%
@@ -305,7 +305,7 @@
         \begin{pgfonlayer}{períodos}
             \defcounter{ppc@local@Linha}{0}
             \PPCParaCadaPeriodo[#1]{\periodo}{
-                \node[nó limpo] at (0, \theppc@local@Linha * -\ppc@AlturaCaixaDisciplina - \theppc@local@Linha * \ppc@SeparacaoCaixasDisciplina) {
+                \node[nó limpo] at (0, \theppc@local@Linha * -\ppc@AlturaCaixaAtividade - \theppc@local@Linha * \ppc@SeparacaoCaixasAtividade) {
                     \ppc@CaixaPeriodo[#1]{\periodo}
                 };
                 \global\stepcounter{ppc@local@Linha}
@@ -315,15 +315,15 @@
 
         \begin{pgfonlayer}{coluna}
             % caixa com os períodos
-            \coordinate (caixa area sup esq) at (-\ppc@LarguraCaixaDisciplina/4 - \ppc@SeparacaoCaixasDisciplina, \ppc@AlturaCaixaDisciplina/2 + \ppc@SeparacaoCaixasDisciplina);
-            \coordinate (caixa area inf dir) at (\ppc@LarguraCaixaDisciplina/4 + \ppc@SeparacaoCaixasDisciplina, -\theppc@local@Linha * \ppc@AlturaCaixaDisciplina - \theppc@local@Linha * \ppc@SeparacaoCaixasDisciplina - \ppc@AlturaCaixaDisciplina/2 - \ppc@SeparacaoCaixasDisciplina);
+            \coordinate (caixa area sup esq) at (-\ppc@LarguraCaixaAtividade/4 - \ppc@SeparacaoCaixasAtividade, \ppc@AlturaCaixaAtividade/2 + \ppc@SeparacaoCaixasAtividade);
+            \coordinate (caixa area inf dir) at (\ppc@LarguraCaixaAtividade/4 + \ppc@SeparacaoCaixasAtividade, -\theppc@local@Linha * \ppc@AlturaCaixaAtividade - \theppc@local@Linha * \ppc@SeparacaoCaixasAtividade - \ppc@AlturaCaixaAtividade/2 - \ppc@SeparacaoCaixasAtividade);
             \node[nó limpo, nome área, fit = (caixa area sup esq)(caixa area inf dir)] (caixa area) {};
 
-            \PPCIf{ppc@MostraNomeArea}{
-                \coordinate (caixa area inf esq) at (-\ppc@LarguraCaixaDisciplina/4 - \ppc@SeparacaoCaixasDisciplina, \ppc@AlturaCaixaDisciplina/2 + 2\ppc@SeparacaoCaixasDisciplina);
-                \coordinate (caixa area sup dir) at (\ppc@LarguraCaixaDisciplina/4 + \ppc@SeparacaoCaixasDisciplina, \ppc@AlturaNomeArea + \ppc@AlturaCaixaDisciplina/2 + 2\ppc@SeparacaoCaixasDisciplina);
+            \PPCIf{MostraNomeArea}{
+                \coordinate (caixa area inf esq) at (-\ppc@LarguraCaixaAtividade/4 - \ppc@SeparacaoCaixasAtividade, \ppc@AlturaCaixaAtividade/2 + 2\ppc@SeparacaoCaixasAtividade);
+                \coordinate (caixa area sup dir) at (\ppc@LarguraCaixaAtividade/4 + \ppc@SeparacaoCaixasAtividade, \ppc@AlturaNomeArea + \ppc@AlturaCaixaAtividade/2 + 2\ppc@SeparacaoCaixasAtividade);
                 \node[nó limpo, nome área, fit=(caixa area inf esq)(caixa area sup dir)] (título) {};
-                \node[nome área, inner sep = 0.25cm, text width = \ppc@LarguraCaixaDisciplina/2 - 3\ppc@SeparacaoCaixasDisciplina] at (título) {Total: \PPCCargaHoraria[#1]{total}[\,h]};
+                \node[nome área, inner sep = 0cm, text width = \ppc@LarguraCaixaAtividade/2 + 2\ppc@SeparacaoCaixasAtividade - 1em] at (título) {Total: \PPCCargaHoraria[#1]{total}[\,h]};
             }{}
         \end{pgfonlayer}
     \end{tikzpicture}%
@@ -334,22 +334,24 @@
 % #1: (opcional) nome da matriz
 % #2: id da área
 \NewDocumentCommand{\ppc@CaixaMatriz}{ O{matriz-principal} }{%
-    \begin{tikzpicture}[transform shape, scale = 0.5]
-        \PPCIf{ppc@MostraColunaPeriodos}{
-            \node[caixa de área] (períodos) {\ppc@CaixaPeriodos[#1]};
-            \coordinate (referência) at ($(períodos.north east) + (\ppc@SeparacaoCaixasDisciplina, 0)$);
-        }{
-            \coordinate (referência) at (0, 0);
-        }
-        \PPCIf{ppc@VisaoDoAluno}{
-            \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{periodo}};
-        }{
-            \ATListForEach{#1-áreas}{\area}{
-                \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{\area}};
-                \coordinate (referência) at ($(área.north east) + (\ppc@SeparacaoCaixasDisciplina, 0)$);
+    \resizebox{\linewidth}{!}{
+        \begin{tikzpicture}%[transform shape, scale = 0.5]
+            \PPCIf{MostraColunaPeriodos}{
+                \node[caixa de área] (períodos) {\ppc@CaixaPeriodos[#1]};
+                \coordinate (referência) at ($(períodos.north east) + (\ppc@SeparacaoCaixasAtividade, 0)$);
+            }{
+                \coordinate (referência) at (0, 0);
             }
-        }
-    \end{tikzpicture}
+            \PPCIf{VisaoDoAluno}{
+                \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{periodo}};
+            }{
+                \ATListForEach{#1-áreas}{\area}{
+                    \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{\area}};
+                    \coordinate (referência) at ($(área.north east) + (\ppc@SeparacaoCaixasAtividade, 0)$);
+                }
+            }
+        \end{tikzpicture}
+    }
 }
 
 \NewDocumentCommand{\PPCMatrizCurricular}{ O{matriz-principal} D<>{} }{%

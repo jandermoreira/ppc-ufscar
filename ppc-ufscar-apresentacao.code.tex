@@ -16,6 +16,7 @@
 \RequirePackage{cleveref}
 
 % Quadros
+\floatstyle{plaintop}
 \ifdef{\thechapter}{
     \newfloat{quadro}{H}{loq}[chapter]
 }{
@@ -40,7 +41,6 @@
 
 % PPCCapa: gera a página de capa
 \NewDocumentCommand{\PPCCapa}{}{
-    \pagestyle{empty}
     \begin{center}
         \large\textsc{\PPCInfo{instituição}}\par
         \textsc{\PPCInfo{centro}}\par
@@ -56,34 +56,28 @@
         \vspace*{10em}\PPCInfo{local}\par
         \PPCInfo{ano}
     \end{center}
-    \clearpage
-    \setcounter{page}{0}
 }
 
 % PPCDadosInstitucionais: gera a apresentação da instituição,
 %   suas unidades e pessoas
 \NewDocumentCommand{\PPCDadosInstitucionais}{}{
-    \pagestyle{empty}
     \begingroup
-    \singlespacing
+    \ifdef{\singlespacing}{\singlespacing}{}
     \begin{center}
         \ATListForEach{dados-institucionais}{\Item}{\Item\par}
     \end{center}
     \endgroup
-    \clearpage
-    \setcounter{page}{1}
-    \ATListCreate{dados-institucionais}  % limpa para salvar memória
 }
 
 % PPCFichaDescritiva: apresenta a ficha descritiva
 \NewDocumentCommand{\PPCFichaDescritiva}{}{
-    \pagestyle{empty}
-    \begingroup
-    \begin{center}
-        \large
-        \textbf{Ficha Descritiva do Curso}
-    \end{center}
-    \vspace{3em}
+    \PPCIf{MostraFichaDescritiva}{%
+        \begin{center}
+            \large
+            \textbf{Ficha Descritiva do Curso}
+        \end{center}
+        \vspace{3em}
+    }{}
     \begin{center}
         \ATListForEach{itens-ficha-descritiva}{\Item}{%
             \noindent
@@ -98,16 +92,12 @@
             \par
         }
     \end{center}
-    \endgroup
-    \clearpage
-    \setcounter{page}{1}
-    \ATListCreate{dados-institucionais}  % salva memória
 }
 
-% PPCFichaDisciplina: apresenta a descrição da disciplina
-% #1: id da disciplina
+% PPCFichaAtividade: apresenta a descrição da atividade
+% #1: id da atividade
 \tcbset{
-    ficha disciplina/.style = {
+    ficha atividade/.style = {
         sharp corners,
         coltitle = .,
         colbacktitle = white,
@@ -115,40 +105,42 @@
         boxrule = 0.4pt,
         left = 0pt,
         right = 0pt,
+        top = 0pt,
+        bottom = 0pt,
     }
 }
-\NewDocumentCommand{\PPCFichaDisciplina}{ m }{
+\NewDocumentCommand{\PPCFichaAtividade}{ m }{
     \begingroup
     \singlespacing
     \noindent
     \begin{tcolorbox}[
-        ficha disciplina,
-        title = {\textbf{\PPCDisciplina{#1}{nome}}}\hfill\large\texttt{\PPCDisciplina{#1}{código}}
+        ficha atividade,
+        title = {\textbf{\PPCAtividade{#1}{nome}}}\hfill\large\texttt{\PPCAtividade{#1}{código}}
     ]
         \begin{tabular}{>{\bfseries\raggedright}p{0.25\linewidth}p{0.70\linewidth}}
-            Caráter:                   & \ATAttributeIfExist[#1]{caráter}{\PPCDisciplina{#1}{caráter}}{\textit{Indefinido}}                   \\
+            Caráter:                   & \ATAttributeIfExist[#1]{caráter}{\PPCAtividade{#1}{caráter}}{\textit{Indefinido}} \\
             \hline
-            Objetivo:                  & \PPCDisciplina{#1}{objetivo}                  \\
+            Objetivo:                  & \PPCAtividade{#1}{objetivo}                                                       \\
             \hline
-            Ementa:                    & \PPCDisciplina{#1}{ementa}                    \\
+            Ementa:                    & \PPCAtividade{#1}{ementa}                                                         \\
             \hline
             Carga horária: &
-            \ATForEach{\TipoHora}{teóricas, práticas, extensionistas, estágio}[{ e }{, }{ e }{}]{\TipoHora:~\PPCDisciplina{#1}{horas \TipoHora}h} \\
+            \ATForEach{\TipoHora}{teóricas, práticas, extensionistas, estágio}[{ e }{, }{ e }{}]{\TipoHora:~\PPCAtividade{#1}{horas \TipoHora}h} \\
             \hline
-            Departamento responsável:  & \PPCDisciplina{#1}{departamento}              \\
+            Departamento responsável:  & \PPCAtividade{#1}{departamento}                                                   \\
             \hline
             Pré-requisitos: &
             \ATListForEach{#1-pré-requisitos}{\prereq}[{ e }{ e }{, }{}]{%
-                \ATAttributeIfExist[#1]{código}{\PPCDisciplina{#1}{código}--}{}%
-                \ATAttributeIfExist[#1]{nome abreviado}{\PPCDisciplina{#1}{nome abrevidado}}{\PPCDisciplina{\prereq}{nome}}%
+                \ATAttributeIfExist[#1]{código}{\PPCAtividade{#1}{código}--}{}%
+                \ATAttributeIfExist[#1]{nome abreviado}{\PPCAtividade{#1}{nome abreviado}}{\PPCAtividade{\prereq}{nome}}%
             }
             \\
             \hline
-            Bibliografia básica:       & \PPCDisciplina{#1}{bibliografia básica}       \\
+            Bibliografia básica:       & \PPCAtividade{#1}{bibliografia básica}                                            \\
             \hline
-            Bibliografia complementar: & \PPCDisciplina{#1}{bibliografia complementar} \\
+            Bibliografia complementar: & \PPCAtividade{#1}{bibliografia complementar}                                      \\
             \hline
-            Competências:              & \PPCDisciplina{#1}{competências}              \\
+            Competências:              & \PPCAtividade{#1}{competências}                                                   \\
         \end{tabular}
     \end{tcolorbox}
     \endgroup
@@ -157,6 +149,7 @@
 % ppc@ApresenteTabelaPeriodo: apresenta a tabela para um período específico
 % #1: (opcional) nome da matriz
 % #2: número do período
+% #3: texto da legenda
 \newcounter{ppc@NumeroItem}
 \NewDocumentCommand{\ppc@ConteudoTabelaPeriodo}{}{}
 \NewDocumentCommand{\ppc@ApresenteTabelaPeriodo}{ O{matriz-principal} m m } {%
@@ -166,15 +159,16 @@
         \stepcounter{ppc@NumeroItem}%
         \xappto{\ppc@ConteudoTabelaPeriodo}{%
             \theppc@NumeroItem &
-            \PPCDisciplina{\codigo}{nome} &
-            \PPCDisciplina{\codigo}{pré-requisitos} &
-            \PPCDisciplina{\codigo}{departamento} &
-            \PPCDisciplina{\codigo}{caráter} &
-            \PPCDisciplina{\codigo}{horas práticas} &
-            \PPCDisciplina{\codigo}{horas teóricas} &
-            \PPCDisciplina{\codigo}{horas extensionistas} &
-            \PPCDisciplina{\codigo}{horas estágio} &
-            \PPCDisciplina{\codigo}{horas total}
+            \PPCAtividade{\codigo}{nome} &
+            \ATListForEach{\codigo-pré-requisitos}{\codigo}{\codigo|}
+            &
+            \PPCAtividade{\codigo}{departamento} &
+            \PPCAtividade{\codigo}{caráter} &
+            \PPCAtividade{\codigo}{horas práticas} &
+            \PPCAtividade{\codigo}{horas teóricas} &
+            \PPCAtividade{\codigo}{horas extensionistas} &
+            \PPCAtividade{\codigo}{horas estágio} &
+            \PPCAtividade{\codigo}{horas total}
             \\
         }%
     }%
@@ -184,14 +178,14 @@
         \begin{tabular}{c>{\RaggedRight\arraybackslash}p{6cm}>{\RaggedRight\arraybackslash}p{5cm}ccccccc}
             \hline
             \multirow{2}{*}{\textbf{nº}} &
-            \multirow{2}{*}{\textbf{Disciplina}} &
+            \multirow{2}{*}{\textbf{Atividade}} &
             \multirow{2}{*}{\textbf{Requisitos}} &
             \textbf{Depto.} &
             \multirow{2}{*}{\textbf{Caráter}} &
             \multicolumn{5}{c}{\textbf{Natureza (horas)}}
             \\
             % nº
-            & % disciplina
+            & % atividade
             & % requisitos
             & \textbf{Ofertante}
             & % caráter
@@ -204,7 +198,7 @@
     \end{quadro}
 }
 
-% PPCQuadroPeriodo: apresenta um quadro com as disciplinas de um ou mais períodos.
+% PPCQuadroPeriodo: apresenta um quadro com as atividades de um ou mais períodos.
 % #1: (opcional) nome da matriz
 % #2: lista separada por vírgula dos períodos (se vazia, todos)
 \NewDocumentCommand{\PPCQuadroPeriodo}{ O{matriz-principal} > { \TrimSpaces } m o } {%
@@ -218,7 +212,7 @@
     \IfValueTF{#3}{%
         \csdef{ppc@local@Titulo}{#3}%
     }{%
-        \csdef{ppc@local@Titulo}{Disciplinas do \periodoº \ATAttributeGet[#1]{nome período}~(Carga horária de \PPCCargaHoraria{total \periodo}\,h).}%
+        \csdef{ppc@local@Titulo}{Atividades do \periodoº \ATAttributeGet[#1]{nome período}~(Carga horária de \PPCCargaHoraria{total \periodo}\,h).}%
     }%
     \ATForEachFrom{\periodo}{\ppc@local@ListaPeriodos}{%
         \ppc@ApresenteTabelaPeriodo[#1]{\periodo}{\ppc@local@Titulo}
