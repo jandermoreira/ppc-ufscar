@@ -131,8 +131,8 @@
             \hline
             Pré-requisitos: &
             \ATListForEach{#1-pré-requisitos}{\prereq}[{ e }{ e }{, }{}]{%
-                \ATAttributeIfExist[#1]{código}{\PPCAtividade{#1}{código}--}{}%
-                \ATAttributeIfExist[#1]{nome abreviado}{\PPCAtividade{#1}{nome abreviado}}{\PPCAtividade{\prereq}{nome}}%
+                \ATAttributeIfExist[#1]{código}{\PPCAtividade{#1}{código}~--~}{}%
+                \PPCAtividade{\prereq}{nome abreviado}%
             }
             \\
             \hline
@@ -157,11 +157,16 @@
     \defcounter{ppc@NumeroItem}{0}%
     \ATListForEach{#1-periodo-#2}{\codigo}{%
         \stepcounter{ppc@NumeroItem}%
+        \csedef{ppc@ListaDeRequisitos}{}%
+        \csdef{ppc@local@Separador}{}%
+        \ATListForEach{\codigo-pré-requisitos}{\prereq}{%
+            \xappto{\ppc@ListaDeRequisitos}{\ppc@local@Separador\PPCAtividade{\prereq}{nome abreviado}}%
+            \csdef{ppc@local@Separador}{; }
+        }%
         \xappto{\ppc@ConteudoTabelaPeriodo}{%
             \theppc@NumeroItem &
             \PPCAtividade{\codigo}{nome} &
-            \ATListForEach{\codigo-pré-requisitos}{\codigo}{\codigo|}
-            &
+            \ppc@ListaDeRequisitos &
             \PPCAtividade{\codigo}{departamento} &
             \PPCAtividade{\codigo}{caráter} &
             \PPCAtividade{\codigo}{horas práticas} &
@@ -175,6 +180,7 @@
     \begin{quadro}
         \caption{#3}
         \bigskip
+        \small
         \begin{tabular}{c>{\RaggedRight\arraybackslash}p{6cm}>{\RaggedRight\arraybackslash}p{5cm}ccccccc}
             \hline
             \multirow{2}{*}{\textbf{nº}} &
