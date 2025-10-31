@@ -13,6 +13,8 @@
 \RequirePackage{multirow}
 \RequirePackage{ragged2e}
 \RequirePackage{tcolorbox}
+\tcbuselibrary{breakable}
+\RequirePackage{longtable}
 \RequirePackage{cleveref}
 
 % Quadros
@@ -98,6 +100,7 @@
 % #1: id da atividade
 \tcbset{
     ficha atividade/.style = {
+        breakable,
         sharp corners,
         coltitle = .,
         colbacktitle = white,
@@ -112,12 +115,13 @@
 \NewDocumentCommand{\PPCFichaAtividade}{ m }{
     \begingroup
     \singlespacing
+    \small
     \noindent
     \begin{tcolorbox}[
         ficha atividade,
         title = {\textbf{\PPCAtividade{#1}{nome}}}\hfill\large\texttt{\PPCAtividade{#1}{código}}
     ]
-        \begin{tabular}{>{\bfseries\raggedright}p{0.25\linewidth}p{0.70\linewidth}}
+        \begin{longtable}{>{\bfseries\raggedright}p{0.25\linewidth}p{0.70\linewidth}}
             Caráter:                   & \ATAttributeIfExist[#1]{caráter}{\PPCAtividade{#1}{caráter}}{\textit{Indefinido}} \\
             \hline
             Objetivo:                  & \PPCAtividade{#1}{objetivo}                                                       \\
@@ -131,8 +135,8 @@
             \hline
             Pré-requisitos: &
             \ATListForEach{#1-pré-requisitos}{\prereq}[{ e }{ e }{, }{}]{%
-                \ATAttributeIfExist[#1]{código}{\PPCAtividade{#1}{código}~--~}{}%
-                \PPCAtividade{\prereq}{nome abreviado}%
+                % \ATAttributeIfExist[\prereq]{código}{\PPCAtividade{#1}{código}~--~}{}%
+                \ATAttributeIfExist[\prereq]{nome abreviado}{\PPCAtividade{\prereq}{nome abreviado}}{\prereq}%
             }
             \\
             \hline
@@ -141,7 +145,7 @@
             Bibliografia complementar: & \PPCAtividade{#1}{bibliografia complementar}                                      \\
             \hline
             Competências:              & \PPCAtividade{#1}{competências}                                                   \\
-        \end{tabular}
+        \end{longtable}
     \end{tcolorbox}
     \endgroup
 }
@@ -160,8 +164,12 @@
         \csedef{ppc@ListaDeRequisitos}{}%
         \csdef{ppc@local@Separador}{}%
         \ATListForEach{\codigo-pré-requisitos}{\prereq}{%
-            \xappto{\ppc@ListaDeRequisitos}{\ppc@local@Separador\PPCAtividade{\prereq}{nome abreviado}}%
-            \csdef{ppc@local@Separador}{; }
+            \ATAttributeIfExist[\prereq]{nome abreviado}{%
+                \xappto{\ppc@ListaDeRequisitos}{\ppc@local@Separador\PPCAtividade{\prereq}{nome abreviado}}%
+            }{%
+                \xappto{\ppc@ListaDeRequisitos}{\ppc@local@Separador\prereq}%
+            }%
+            \csdef{ppc@local@Separador}{; }%
         }%
         \xappto{\ppc@ConteudoTabelaPeriodo}{%
             \theppc@NumeroItem &
