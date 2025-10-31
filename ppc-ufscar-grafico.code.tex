@@ -193,7 +193,7 @@
     }%
     \begin{tikzpicture}
         \node[caixa atividade] (caixa atividade) {};
-        \node[nome atividade, xshift = -0.2cm] at ($(caixa atividade.south)!0.65!(caixa atividade.north)$) (nome atividade) { \ATAttributeIfExist[#1]{nome abreviado}{\PPCAtividade{#1}{nome abreviado}}{\PPCAtividade{#1}{nome}}};
+        \node[nome atividade, xshift = -0.2cm] at ($(caixa atividade.south)!0.65!(caixa atividade.north)$) (nome atividade) {\PPCAtividade{#1}{nome abreviado}};
         \coordinate (horas) at ($(caixa atividade.south west) + (0, 0.05cm)$);
         \foreach \prefixo/\horas in {
             T:/teóricas, P:/práticas, Ext:/extensionistas, Est:/estágio%
