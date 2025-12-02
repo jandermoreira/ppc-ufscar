@@ -121,6 +121,7 @@
         ficha atividade,
         title = {\textbf{\PPCAtividade{#1}{nome}}}\hfill\large\texttt{\PPCAtividade{#1}{código}}
     ]
+        \vspace{-\baselineskip}
         \begin{longtable}{>{\bfseries\raggedright}p{0.25\linewidth}p{0.70\linewidth}}
             Caráter:                   & \ATAttributeIfExist[#1]{caráter}{\PPCAtividade{#1}{caráter}}{\textit{Indefinido}} \\
             \hline
@@ -143,8 +144,8 @@
             Bibliografia básica:       & \PPCAtividade{#1}{bibliografia básica}                                            \\
             \hline
             Bibliografia complementar: & \PPCAtividade{#1}{bibliografia complementar}                                      \\
-            \hline
-            Competências:              & \PPCAtividade{#1}{competências}                                                   \\
+            % \hline
+            % Competências:              & \PPCAtividade{#1}{competências}                                                   \\
         \end{longtable}
     \end{tcolorbox}
     \endgroup
