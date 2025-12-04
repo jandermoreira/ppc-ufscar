@@ -101,7 +101,7 @@ Os elementos de suporte à organização são apresentados na \Cref{tab:elemento
         Cada atividade deve ter sua descrição completa, o que é feito com o comando \Macro{PPCDefinaAtividade}. Por padrão, cada atividade é definida em um arquivo separado (facilita a organização, a edição e controle de alterações), mas nada impede que as definições sejam feitas conforme as necessidades de quem escreve o documento. Se postas em arquivos, elas podem ser importadas para o documento principal com \Macro{PPCImporteAtividades}. Com essas informações as fichas de cada disciplina podem ser geradas. Essa definição tem que, necessariamente, ser feita antes da definição da matriz curricular. (\Cref{sec:definicao-de-disciplina})
         \\
         Matriz curricular &
-        A definição da matriz corresponde à organização das disciplinas no curso. Permite especificar as disciplinas por área, além de indicar a carga de optativas e listar possíveis eletivas. Usando \Macro{PPCDefinaMatrizCurricular}, são listadas as disciplinas período por período e indicando quais são obrigatórias e quais são optativas. Essa definição permite saber o número de períodos, quais são as disciplinas do curso e seu caráter, quais são as áreas, determinar a carga horária total e por período. A partir dela é gerada o elemento gráfico grade curricular e as listagens de disciplinas por período. \\
+        A definição da matriz corresponde à organização das atividades curriculares no curso. Permite especificar as atividades curriculares por área, além de indicar a carga de optativas e listar possíveis eletivas. Usando \Macro{PPCDefinaMatrizCurricular}, são listadas as atividades curriculares período por período e indicando quais são obrigatórias e quais são optativas. Essa definição permite saber o número de períodos, quais são as atividades curriculares do curso e seu caráter, quais são as áreas, determinar a carga horária total e por período. A partir dela é gerada o elemento gráfico grade curricular e as listagens de atividades curriculares por período. \\
     \end{tabular}
 \end{table}
 
@@ -204,7 +204,7 @@ A dados institucionais (ou ``segunda página'') é descrita com \MacroRef{PPCDef
 
 A apresentação da ficha pode ser feita manualmente com \MacroRef{PPCDadosInstitucionais}.
 
-\subsection{Definição de disciplinas}\label{sec:definicao-de-disciplina}
+\subsection{Definição de atividades curriculares}\label{sec:definicao-de-disciplina}
 
 Cada disciplina deve ser especificada usando-se \Macro{PPCDefinaAtividade}. O primeiro parâmetro é o identificador da disciplina, usualmente um apelido comum, como \PDInline{tcc} para \textit{Trabalho de Conclusão de Curso}, por exemplo.
 
@@ -225,11 +225,11 @@ Cada disciplina deve ser especificada usando-se \Macro{PPCDefinaAtividade}. O pr
     A disciplina \PPCAtividade{cálculo1}{nome} possui carga horária total de \PPCAtividade{cálculo1}{horas total}\,h.
 \end{PDExample}
 
-Alguns atributos merecem destaque, sendo apresentados na \Cref{tab:atributos-disciplinas}.
+Alguns atributos merecem destaque, sendo apresentados na \Cref{tab:atributos-atividades}.
 
 \begin{table}
-    \caption{Atributos de disciplinas que merecem destaque.}
-    \label{tab:atributos-disciplinas}
+    \caption{Atributos de atividades curriculares que merecem destaque.}
+    \label{tab:atributos-atividades}
     \centering
     \begin{tabular}{>{\raggedright\arraybackslash}p{0.35\linewidth}>{\RaggedRight\arraybackslash}p{0.55\linewidth}}
         \hfill\textbf{Atributos}\hfill\null & \hfill\textbf{Considerações}\hfill\null \\
@@ -241,7 +241,7 @@ Alguns atributos merecem destaque, sendo apresentados na \Cref{tab:atributos-dis
         A lista de pré-requisitos de uma disciplina pode ser vazia ou uma lista separada por vírgulas com um ou mais \Argument{id-disciplina}. Ao serem apresentados os quadros com as listas de disciplina por período (\MacroRef{PPCQuadroPeriodo}), essa lista é expandida para os nomes de cada disciplina.
         \\
         \PDInline{nome abreviado} &
-        Esse atributo é opcional e pode ser omitido. Quando existir, ele é usado no nome da disciplina na apresentação gráfica da matriz curricular (\MacroRef{PPCMatrizCurricular}). Assim, nomes mais longos de disciplinas podem ter uma versão mais curta para que caibam nos espaços reservados. Siglas significativas também podem ser usadas, como TCC.
+        Esse atributo é opcional e pode ser omitido. Quando existir, ele é usado no nome da disciplina na apresentação gráfica da matriz curricular (\MacroRef{PPCMatrizCurricular}). Assim, nomes mais longos de atividades curriculares podem ter uma versão mais curta para que caibam nos espaços reservados. Siglas significativas também podem ser usadas, como TCC.
         \\
         \PDInline{horas teóricas}, \PDInline{horas práticas}, \PDInline{horas extensionistas} e \PDInline{horas estágio} &
         Esses atributos são obrigatórios e, a partir deles, o atributo \PDInline{horas total} é automaticamente calculado e incluído na descrição da disciplina. Terminada a definição de uma disciplina, \MacroRef{PPCAtividade}\MArg{id}\PArg{horas total} pode ser usado.
@@ -250,7 +250,7 @@ Alguns atributos merecem destaque, sendo apresentados na \Cref{tab:atributos-dis
 \end{table}
 
 \subsection{Especificação da matriz curricular}\label{sec:especificacao-da-matriz-curricular}
-A matriz curricular, feita com \MacroRef{PPCDefinaMatrizCurricular}, é a forma de organizar o conjunto de disciplinas.
+A matriz curricular, feita com \MacroRef{PPCDefinaMatrizCurricular}, é a forma de organizar o conjunto de atividades curriculares.
 
 Segue um exemplo de matriz, o qual será abordado por partes.
 
@@ -311,12 +311,12 @@ O curso é organizado por períodos letivos. No exemplo, é definido um curso de
     número períodos = 8,
 \end{PDListing}
 
-O texto ``trimestre'' é usado na apresentação das tabelas de disciplinas por trimestre apenas.
+O texto ``trimestre'' é usado na apresentação das tabelas de atividades curriculares por trimestre apenas.
 
 \subsubsection{Áreas}
 O curso é organizado em quatro grandes áreas: Terra, Fogo, Água e Ar.
 
-Para a área da água, seu identificador é \PDInline{hidro} e seu \PDInline{nome} é ``Ciências da Água''. Essa área não possui disciplinas nos trimestres 1, 4, 6 ou 8, mas tem duas disciplinas no segundo trimestre, uma no terceiro, três no quinto e uma no sétimo.
+Para a área da água, seu identificador é \PDInline{hidro} e seu \PDInline{nome} é ``Ciências da Água''. Essa área não possui atividades curriculares nos trimestres 1, 4, 6 ou 8, mas tem duas atividades curriculares no segundo trimestre, uma no terceiro, três no quinto e uma no sétimo.
 
 \begin{PDListing}
     área = {hidro}{
@@ -329,14 +329,14 @@ Para a área da água, seu identificador é \PDInline{hidro} e seu \PDInline{nom
 \end{PDListing}
 
 \index{optativas}
-\index{disciplinas!optativas}
+\index{atividades curriculares!optativas}
 \index{obrigatórias}
-\index{disciplinas!obrigatórias}
-A especificação da lista de disciplinas é feita pelos identificadores usados na definição da disciplina. Eles podem ser prefixados para modificar como a disciplina é interpretada, como descrito na \Cref{tab:prefixos-disciplinas}.
+\index{atividades curriculares!obrigatórias}
+A especificação da lista de atividades curriculares é feita pelos identificadores usados na definição da disciplina. Eles podem ser prefixados para modificar como a disciplina é interpretada, como descrito na \Cref{tab:prefixos-atividades}.
 
 \begin{table}[H]
-    \caption{Prefixos usados nas listas de disciplinas.}
-    \label{tab:prefixos-disciplinas}
+    \caption{Prefixos usados nas listas de atividades curriculares.}
+    \label{tab:prefixos-atividades}
     \centering
     \begin{tabular}{>{\centering\arraybackslash}p{0.25\linewidth}>{\RaggedRight\arraybackslash}p{0.65\linewidth}}
         \hfill\textbf{Prefixo}\hfill\null & \hfill\textbf{Descrição}\hfill\null                                                                                                                                                                          \\
@@ -350,10 +350,10 @@ A especificação da lista de disciplinas é feita pelos identificadores usados 
 \Alerta{Não deve haver espaços entre o prefixo e o identificador da disciplina.}
 
 \bigskip
-No exemplo, as disciplinas \PDInline{crio-fund} e \PDInline{hidro-geo} são marcadas como optativas, o que é indicado pelo asterisco que precede o identificador. Atividades sem o asterisco são consideradas obrigatórias. Sempre que uma disciplina é incluída na matriz, seu atributo \PDInline{caráter} é ajustado para \PDInline{Obrigatório} ou \PDInline{Optativo}.
+No exemplo, as atividades curriculares \PDInline{crio-fund} e \PDInline{hidro-geo} são marcadas como optativas, o que é indicado pelo asterisco que precede o identificador. Atividades sem o asterisco são consideradas obrigatórias. Sempre que uma disciplina é incluída na matriz, seu atributo \PDInline{caráter} é ajustado para \PDInline{Obrigatório} ou \PDInline{Optativo}.
 
 \subsubsection{Carga de optativas}\label{sec:carga-de-optativas}
-Em um determinado período do curso, várias optativas podem ser oferecidas. No exemplo dado, são ofertadas cinco disciplinas optativas no 6º trimestre. Porém, é esperado que o aluno cumpra três delas para integralizar sua carga horária.
+Em um determinado período do curso, várias optativas podem ser oferecidas. No exemplo dado, são ofertadas cinco atividades curriculares optativas no 6º trimestre. Porém, é esperado que o aluno cumpra três delas para integralizar sua carga horária.
 
 A carga de optativas é especificada no atributo \PDInline{carga optativas}, que estabelece uma lista de número de horas, um por disciplina.
 
@@ -372,7 +372,7 @@ Para uma situação específica de um curso, o aluno poderia optar por fazer est
 
 Para essa situação, o identificador da disciplina pode ser precedido de um sinal de menos (\PDInline{-}), o que faz com que a disciplina seja incluída na grade como obrigatória, mas desconsiderando sua carga horária. Para dar suporte para compensar uma determinada quantidade de horas, ela pode ser incluída na lista do semestre na forma \PDInline{+}$n$ (e.g, \PDInline{+120}) para acrescentar manualmente $n$~horas à carga horária.
 
-No exemplo, \PDInline{estagio} e \PDInline{tcc} seriam disciplinas com 360\,h de carga horária cada uma. A ``área'' de estágio e TCC as inclui como obrigatórias, sem contabilizar as horas de nenhuma delas. Manualmente são incluídas 360\,h no período.\footnote{Naturalmente, \PDInline{8 = {-estagio, tcc}} teria o mesmo efeito final.}
+No exemplo, \PDInline{estagio} e \PDInline{tcc} seriam atividades curriculares com 360\,h de carga horária cada uma. A ``área'' de estágio e TCC as inclui como obrigatórias, sem contabilizar as horas de nenhuma delas. Manualmente são incluídas 360\,h no período.\footnote{Naturalmente, \PDInline{8 = {-estagio, tcc}} teria o mesmo efeito final.}
 
 \begin{PDListing}
     área = {estagio-tcc}{
@@ -384,8 +384,8 @@ No exemplo, \PDInline{estagio} e \PDInline{tcc} seriam disciplinas com 360\,h de
 \subsubsection{Relação de eletivas}
 
 \index{eletivas}
-\index{disciplinas!eletivas}
-Caso seja necessário, uma lista com disciplinas eletivas selecionadas pode ser criada.
+\index{atividades curriculares!eletivas}
+Caso seja necessário, uma lista com atividades curriculares eletivas selecionadas pode ser criada.
 
 \begin{PDListing}
     eletivas = {geo-hist, astro-elem},
@@ -423,11 +423,11 @@ Os diversos atributos podem ser, ainda, manipulados conforme descrito no pacote 
     O \Argument{nome-do-item} pode ser um dos seguintes:
     \begin{itemize}
         \item \texttt{total}: número de horas total do curso;
-        \item \texttt{obrigatória}: número de horas total de disciplinas obrigatórias;
-        \item \texttt{obrigatória $n$}: número de horas de disciplinas obrigatórias para o período $n$;
-        \item \texttt{opcional}: número de horas total de disciplinas opcionais;
-        \item \texttt{opcional $n$}: número de horas de disciplinas opcionais para o período $n$;
-        \item \texttt{eletiva}: número total de disciplinas definidas como eletivas.
+        \item \texttt{obrigatória}: número de horas total de atividades curriculares obrigatórias;
+        \item \texttt{obrigatória $n$}: número de horas de atividades curriculares obrigatórias para o período $n$;
+        \item \texttt{opcional}: número de horas total de atividades curriculares opcionais;
+        \item \texttt{opcional $n$}: número de horas de atividades curriculares opcionais para o período $n$;
+        \item \texttt{eletiva}: número total de atividades curriculares definidas como eletivas.
     \end{itemize}
 
     O \Argument{texto-adicional}, que é opcional, é o texto que será colocado logo após o número de horas. Pode ser, por exemplo, ``\Macro{,}h'' ou ``\PDTilde horas''.
@@ -470,18 +470,62 @@ Alguns desses recursos podem ser destacados:
 \end{itemize}
 
 \subsection{Listas disponíveis}
-Várias listas são criadas com os dados fornecidos.
+\index{listas disponíveis}
+Várias listas são criadas com os dados fornecidos e estão apresentadas na \Cref{tab:listas}
 
-\begin{itemize}
-    \item Todas as disciplinas
-    \item Todas as obrigatórias do período
-    \item Todas as optativas do período
-    \item Todas as eletivas
-    \item etc
-\end{itemize}
+\begin{table}[H]
+    \caption{Listas disponíveis para o documento.}
+    \label{tab:listas}
+    \centering
+    \begin{tabular}{>{\raggedright\arraybackslash\ttfamily}l>{\raggedright\arraybackslash}p{0.55\linewidth}}
+        \hfill\normalfont\textbf{Lista}\hfill\null & \hfill\textbf{Descrição}\hfill\null \\
+        \cmidrule(lr){1-1} \cmidrule(lr){2-2} \\
+        matriz-principal-áreas &
+        Relação de todos os \textit{id} de área da matriz curricular.
+        \\
+        \Argument{nome-matriz}-áreas &
+        Relação de todos os \textit{id} de área da matriz curricular nomeada \Argument{nome-matriz}.
+        \\
+        matriz-principal-áreas-$n$ &
+        Relação das atividades os \textit{id} de área da matriz curricular.
+        \\
+        \Argument{nome-matriz}-áreas-$n$ &
+        Relação de todos os \textit{id} de área da matriz curricular nomeada \Argument{nome-matriz} no período $n$.
+        \\
+        matriz-principal-atividades &
+        Relação de todas as atividades curriculares inseridas na matriz curricular.
+        \\
+        \Argument{nome-matriz}-atividades &
+        Relação de todas as atividades curriculares inseridas na matriz curricular nomeada \Argument{nome-matriz}.
+        \\
+        matriz-principal-eletivas &
+        Relação de todas as atividades curriculares eletivas inseridas na matriz curricular.
+        \\
+        \Argument{nome-matriz}-eletivas &
+        Relação de todas as atividades curriculares eletivas inseridas na matriz curricular nomeada \Argument{nome-matriz}.
+        \\
+        matriz-principal-período-$n$ &
+        Relação das atividades curriculares registradas no período $n$.
+        \\
+        \Argument{nome-matriz}-período-$n$ &
+        Relação das atividades curriculares do período $n$ da matriz curricular nomeada \Argument{nome-matriz}.
+        \\
+        \Argument{id-disciplina}-pré-requisitos &
+        Relação dos pré-requisitos definidos para a disciplina \Argument{id-disciplina}.
+        \\
+    \end{tabular}
+\end{table}
+
+\begin{PDListing}
+    % Apresentação de todas as fichas de atividades curriculares da matriz
+    \ATListForEach{matriz-principal-atividades}{\identificador}{
+        \PPCFichaAtividade{\identificador}
+    }
+\end{PDListing}
 
 
 \section{Informações padronizadas}
+Uma série de comandos foi disponibilizada no intuito de facilitar a edição e apresentação do texto completo.
 
 \subsection{Informações disponíveis}
 
@@ -512,7 +556,7 @@ Várias listas são criadas com os dados fornecidos.
 \begin{Macrodef}{PPCQuadroPeriodo}{\OArg{nome-matriz}\MArg{períodos}\OArg{legenda}}{}
     \Macro{PPCQuadroPeriodo} gera um \EnvironmentRef{quadro} para os \Argument{períodos} especificados. Os períodos são na forma de uma lista de números de período separados por vírgulas; caso a lista seja omitida, todos os períodos são gerados.
 
-    O quadro padrão é formado por uma tabela com as disciplinas do período.
+    O quadro padrão é formado por uma tabela com as atividades curriculares do período.
 
     Uma \Argument{legenda} pode ser opcionalmente especificada e seu texto será usado para a legenda do quadro. Neste texto, \Macro{periodo} pode ser usado para o número do período.
 \end{Macrodef}
@@ -576,43 +620,43 @@ A aparência da apresentação pode ser modificada segundo uma série de opçõe
 \end{Optiondef}
 
 \begin{Optiondef}{separação}{\Argument{comprimento}}{Inicialmente: \texttt{0.2cm}}
-    A separação indica o espaço entre as disciplinas e as bordas. Esse valor é uma referência, pois a figura como um todo será redimensionada.
+    A separação indica o espaço entre as atividades curriculares e as bordas. Esse valor é uma referência, pois a figura como um todo será redimensionada.
 \end{Optiondef}
 
 \begin{Optiondef}{cor fundo obrigatória}{\Argument{cor}}{Inicialmente: \texttt{blue!40}}
-    Determina a cor de fundo das caixas das disciplinas obrigatórias.
+    Determina a cor de fundo das caixas das atividades curriculares obrigatórias.
 \end{Optiondef}
 
 \begin{Optiondef}{cor texto obrigatória}{\Argument{cor}}{Inicialmente: \texttt{black}}
-    Determina a cor do texto nas caixas das disciplinas obrigatórias.
+    Determina a cor do texto nas caixas das atividades curriculares obrigatórias.
 \end{Optiondef}
 
 \begin{Optiondef}{cor horas obrigatória}{\Argument{cor}}{Inicialmente: \texttt{black}}
-    Determina a cor do texto usado para a carga horária nas caixas das disciplinas obrigatórias.
+    Determina a cor do texto usado para a carga horária nas caixas das atividades curriculares obrigatórias.
 \end{Optiondef}
 
 \begin{Optiondef}{cor gradiente obrigatória}{\Argument{cor}}{Inicialmente: \texttt{blue!10}}
-    Os espaços para as horas dentro das caixas das disciplinas possuem um fundo degradê. Esse gradiente parte da cor de fundo da caixa e termina na cor especificada para \Option{cor gradiente obrigatória}.
+    Os espaços para as horas dentro das caixas das atividades curriculares possuem um fundo degradê. Esse gradiente parte da cor de fundo da caixa e termina na cor especificada para \Option{cor gradiente obrigatória}.
 \end{Optiondef}
 
 \begin{Optiondef}{cor fundo optativa}{\Argument{cor}}{Inicialmente: \texttt{teal!40}}
-    Determina a cor de fundo das caixas das disciplinas optativas.
+    Determina a cor de fundo das caixas das atividades curriculares optativas.
 \end{Optiondef}
 
 \begin{Optiondef}{cor texto optativa}{\Argument{cor}}{Inicialmente: \texttt{black}}
-    Determina a cor do texto nas caixas das disciplinas optativas.
+    Determina a cor do texto nas caixas das atividades curriculares optativas.
 \end{Optiondef}
 
 \begin{Optiondef}{cor horas optativa}{\Argument{cor}}{Inicialmente: \texttt{black}}
-    Determina a cor do texto usado para a carga horária nas caixas das disciplinas optativas.
+    Determina a cor do texto usado para a carga horária nas caixas das atividades curriculares optativas.
 \end{Optiondef}
 
 \begin{Optiondef}{cor gradiente optativa}{\Argument{cor}}{Inicialmente: \texttt{teal!10}}
-    Os espaços para as horas dentro das caixas das disciplinas possuem um fundo degradê. Esse gradiente parte da cor de fundo da caixa e termina na cor especificada para \Option{cor gradiente optativa}.
+    Os espaços para as horas dentro das caixas das atividades curriculares possuem um fundo degradê. Esse gradiente parte da cor de fundo da caixa e termina na cor especificada para \Option{cor gradiente optativa}.
 \end{Optiondef}
 
 \begin{Optiondef}{cor fundo área}{\Argument{cor}}{Inicialmente: \texttt{black!10}}
-    As disciplinas de cada área ficam contidas em uma caixa que engloba todos os períodos. Esta é a cor de fundo desta caixa. Ela também é usada como cor de fundo para o nome das áreas.
+    As atividades curriculares de cada área ficam contidas em uma caixa que engloba todos os períodos. Esta é a cor de fundo desta caixa. Ela também é usada como cor de fundo para o nome das áreas.
 \end{Optiondef}
 
 \begin{Optiondef}{cor texto período}{\Argument{cor}}{Inicialmente: \texttt{blue!20!black}}
@@ -648,7 +692,7 @@ A aparência da apresentação pode ser modificada segundo uma série de opçõe
 \end{Optiondef}
 
 \begin{Optiondef}{visão do aluno}{\PDInline{true}|\PDInline{false}}{Inicialmente: \PDInline{false}}
-    Na apresentação regular da matriz curricular, todas as disciplinas optativas disponíveis para o aluno são apresentadas, mesmo que ele tenha que cumprir uma quantidade menor delas.
+    Na apresentação regular da matriz curricular, todas as atividades curriculares optativas disponíveis para o aluno são apresentadas, mesmo que ele tenha que cumprir uma quantidade menor delas.
 
     Na ``visão do aluno'', as áreas não são apresentadas e as optativas são representadas de forma genérica, indicando a quantidade e as cargas horárias de cada uma.
 \end{Optiondef}
@@ -672,14 +716,15 @@ A aparência da apresentação pode ser modificada segundo uma série de opçõe
 Esta é uma \textit{lista de desejos} que podem ou não ser concretizados no futuro:
 
 \begin{itemize}
-    \item Substituição do texto usado nas bibliografias das disciplinas por uma lista de rótulos \BibTeX\ para formatação automática segundo a ABNT.
-    \item Geração de grade de disciplinas com conexões representando pré-requisitos.
+    \item Substituição do texto usado nas bibliografias das atividades curriculares por uma lista de rótulos \BibTeX\ para formatação automática segundo a ABNT.
+    \item Geração de grade de atividades curriculares com conexões representando pré-requisitos.
     \item Pensar em uma solução melhor para o caso da compensação de horas (pág.~\pageref{sec:compensacao-carga-horaria}).
 \end{itemize}
 
 
 \section{Sugestões e problemas}
 Sugestões de melhorias, de novas funcionalidades e também erros ou inconsistências podem (e devem) ser reportados ao autor, preferencialmente nas \href{https://github.com/jandermoreira/ppc-ufscar/issues}{\textit{issues} do Github}.
+
 
 \section{Exemplo}
 
