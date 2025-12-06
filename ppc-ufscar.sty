@@ -238,10 +238,10 @@
         \ATAttributeGetTo[#1]{\ppc@local@Nome}{nome abreviado}%
         \PackageWarning{xxx}{#1 já tem nome abreviado (\ppc@local@Nome)}
     }{%
-        % \PackageWarning{xxx}{#1 não tem nome abreviado}
+    % \PackageWarning{xxx}{#1 não tem nome abreviado}
         \ATAttributeGetTo[#1]{\ppc@local@Nome}{nome}%
         \ATAttributeSetFrom[#1]{nome abreviado}{\ppc@local@Nome}
-        % \PackageWarning{xxx}{Mudando nome abreviado de #1 para \ppc@local@Nome}
+    % \PackageWarning{xxx}{Mudando nome abreviado de #1 para \ppc@local@Nome}
     }%
 % todo: criar uma lista das atividades definidas (portanto, válidas)
 }
@@ -668,8 +668,8 @@
 }
 
 \input{ppc-ufscar-apresentacao.code}
-\input{ppc-ufscar-grafico.code.tex}
-\input{ppc-ufscar-competencias.code.tex}
-\input{ppc-ufscar-ods.code.tex}
+\input{ppc-ufscar-grafico.code}
+\input{ppc-ufscar-competencias.code}
+\input{ppc-ufscar-ods.code}
 
 \endinput
