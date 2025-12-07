@@ -523,6 +523,16 @@ Várias listas são criadas com os dados fornecidos e estão apresentadas na \Cr
     }
 \end{PDListing}
 
+\begin{Macrodef}{PPCOrdeneAtividades}{\MArg{nome-lista}\MArg{nome-atributo}}{}
+    Esta macro permite a ordenação (ordem alfabética) de uma lista de atividades curriculares \Argument{nome-lista} usando como critério o atributo \Argument{nome-atributo}.
+\end{Macrodef}
+
+\begin{PDListing}
+    % Ordena as disciplinas da matriz curricular por nome
+    \PPCOrdeneAtividades{matriz-curricular-atividades}{nome}
+\end{PDListing}
+
+
 
 \section{Informações padronizadas}
 Uma série de comandos foi disponibilizada no intuito de facilitar a edição e apresentação do texto completo.

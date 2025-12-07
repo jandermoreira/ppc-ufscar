@@ -261,6 +261,40 @@
     \docsvlist{#1}%
 }
 
+\ExplSyntaxOn
+\cs_new:Npn \ppc_obtenha_segundo_argumento:NN #1#2 {
+    % #1: macro para armazenar o segundo argumento
+    % #2: macro contendo um par separado por | (e.g. "abc|de" --> "de")
+    \seq_clear_new:N \l_ppc_argumentos_seq
+    \seq_set_split:NnV \l_ppc_argumentos_seq { | } #2
+    % \tl_clear_new:N #1
+    \seq_pop_right:NN \l_ppc_argumentos_seq #1
+}
+\NewDocumentCommand{\ppc@ObtenhaSegundoArgumento}{ m m }{
+    \ppc_obtenha_segundo_argumento:NN #1 #2
+}
+\ExplSyntaxOff
+
+
+% PPCOrdeneAtividades: ordena uma lista de referências
+% #1: nome da lista
+% #2: atributo usado para ordenação
+\NewDocumentCommand{\PPCOrdeneAtividades}{ m m }{
+    \ATListCreate{ppc@local@TempList}
+    \ATListForEach{#1}{\ppc@local@Atividade}{
+        \ATAttributeGetTo[\ppc@local@Atividade]{\ppc@local@Atributo}{#2}
+        \ATNormalizeText{\ppc@local@Atributo}
+        \csedef{ppc@local@NovoItem}{\ppc@local@Atributo|\ppc@local@Atividade}
+        \ATListAppendItemsFrom{ppc@local@TempList}{\ppc@local@NovoItem}
+    }
+    \ATListSort{ppc@local@TempList}
+    \ATListCreate{#1}
+    \ATListForEach{ppc@local@TempList}{\ppc@local@Item}{
+        \ppc@ObtenhaSegundoArgumento{\ppc@local@Atividade}{\ppc@local@Item}
+        \ATListAppendItemsFrom{#1}{\ppc@local@Atividade}
+    }
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUPORTE PARA CARGA HORÁRIA
 
@@ -402,9 +436,9 @@
     eletivas .code:n = {
         \ppc_defina_atividades_eletivas:n { #1 }
     },
-    % carga~para~deduzir .code:n = {
-    %     \ppc_defina_carga_para_deduzir:n { #1 }
-    % },
+% carga~para~deduzir .code:n = {
+%     \ppc_defina_carga_para_deduzir:n { #1 }
+% },
 }
 \cs_new:Npn \ppc_defina_matriz_curricular:nn #1#2 {
     \tl_clear_new:N \l_ppc_matriz_corrente_tl
