@@ -236,12 +236,9 @@
     \ATClassSetFrom{#1}{\ppc@local@TotalHoras}%
     \ATAttributeIfExist[#1]{nome abreviado}{
         \ATAttributeGetTo[#1]{\ppc@local@Nome}{nome abreviado}%
-        \PackageWarning{xxx}{#1 já tem nome abreviado (\ppc@local@Nome)}
     }{%
-    % \PackageWarning{xxx}{#1 não tem nome abreviado}
         \ATAttributeGetTo[#1]{\ppc@local@Nome}{nome}%
         \ATAttributeSetFrom[#1]{nome abreviado}{\ppc@local@Nome}
-    % \PackageWarning{xxx}{Mudando nome abreviado de #1 para \ppc@local@Nome}
     }%
 % todo: criar uma lista das atividades definidas (portanto, válidas)
 }
