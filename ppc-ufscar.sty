@@ -585,7 +585,6 @@
             }{
                 \ppc_obtenha_id_atividade:Nn \l_ppc_atividade_tl { ##1 }
                 \ppc_obtenha_carga_atividade:Nn \l_ppc_carga_da_atividade_int { \l_ppc_atividade_tl }
-                \PackageWarning{xxx}{\tl_use:N \l_ppc_atividade_tl}
                 \ppc_some_carga_horaria:nn { teórica } { \tl_use:c { g_at_ \tl_use:N \l_ppc_atividade_tl _ horas~teóricas _tl } }
                 \ppc_some_carga_horaria:nn { prática } { \tl_use:c { g_at_ \tl_use:N \l_ppc_atividade_tl _ horas~práticas _tl } }
                 \ppc_some_carga_horaria:nn { extensionista } { \tl_use:c { g_at_ \tl_use:N \l_ppc_atividade_tl _ horas~extensionistas _tl } }
@@ -684,12 +683,16 @@
 % #2: macro com o número do período
 % #3: código a ser executado
 \cs_new:Npn \ppc_para_cada_periodo:nnn #1#2#3 {
-    \int_set:Nn \l_tmpa_int { 0 }  % contador
-    \exp_args:NNc \int_set:Nn \l_tmpb_int { g_ppc_ #1 _numero_periodos_int } % número de períodos
+    \int_zero_new:N \l_ppc_local_contador_periodo_int
+    \int_set:Nn \l_ppc_local_contador_periodo_int { 0 }
+    \int_zero_new:N \l_ppc_local_numero_periodos_int
+    \exp_args:NNc \int_set:Nn \l_ppc_local_numero_periodos_int {
+        g_ppc_ #1 _numero_periodos_int
+    }
     \tl_clear_new:N #2
-    \int_while_do:nNnn { \l_tmpa_int } { < } { \l_tmpb_int } {
-        \int_add:Nn \l_tmpa_int { 1 }
-        \tl_set:Nn #2 { \int_use:N \l_tmpa_int }
+    \int_while_do:nNnn { \l_ppc_local_contador_periodo_int } { < } { \l_ppc_local_numero_periodos_int } {
+        \int_add:Nn \l_ppc_local_contador_periodo_int { 1 }
+        \tl_set:Nn #2 { \int_use:N \l_ppc_local_contador_periodo_int }
         #3
     }
 }
