@@ -365,7 +365,7 @@ A carga de optativas é especificada no atributo \PDInline{carga optativas}, que
     },
 \end{PDListing}
 
-A contabilização da carga horária do período é a soma das obrigatórias com a soma das cargas das optativas listadas. (Ver \Macro{PPCCargaHoraria}.)
+A contabilização da carga horária do período é a soma das obrigatórias com a soma das cargas das optativas listadas. (Ver \MacroRef{PPCCargaHoraria}.)
 
 \subsubsection{Compensação de carga horária}\label{sec:compensacao-carga-horaria}
 Para uma situação específica de um curso, o aluno poderia optar por fazer estágio ou o trabalho de conclusão de curso. Colocar ambos na grade era necessário e as duas deveriam ser indicadas como obrigatórias,  mas a contabilização de apenas um deles deveria ser feita.
@@ -391,7 +391,7 @@ Caso seja necessário, uma lista com atividades curriculares eletivas selecionad
     eletivas = {geo-hist, astro-elem},
 \end{PDListing}
 
-Essa listagem atualiza a contagem de horas de eletivas (ver \Macro{PPCCargaHoraria}).
+Essa listagem atualiza a contagem de horas de eletivas (ver \MacroRef{PPCCargaHoraria}).
 
 
 \section{Descrição de recursos escrita}
@@ -421,15 +421,23 @@ Os diversos atributos podem ser, ainda, manipulados conforme descrito no pacote 
     A \Macro{PPCCargaHoraria} recupera o numero de horas do curso conforme definido por \MacroRef{PPCDefinaMatrizCurricular}.
 
     O \Argument{nome-do-item} pode ser um dos seguintes:
-    \begin{itemize}
-        \item \texttt{total}: número de horas total do curso;
-        \item \texttt{obrigatória}: número de horas total de atividades curriculares obrigatórias;
-        \item \texttt{obrigatória $n$}: número de horas de atividades curriculares obrigatórias para o período $n$;
-        \item \texttt{opcional}: número de horas total de atividades curriculares opcionais;
-        \item \texttt{opcional $n$}: número de horas de atividades curriculares opcionais para o período $n$;
-        \item \texttt{eletiva}: número total de atividades curriculares definidas como eletivas.
-    \end{itemize}
 
+    \begin{tabular}{l>{\raggedright\arraybackslash}p{0.7\linewidth}}
+        \hfill\textbf{Nome}\hfill\null & \hfill\textbf{Descrição}\hfill\null                                         \\
+        \cmidrule(lr){1-1} \cmidrule(lr){2-2} \\
+        \texttt{total}                 & Número de horas total do curso.                                             \\
+        \texttt{obrigatória}           & Número de horas total de atividades curriculares obrigatórias.              \\
+        \texttt{obrigatória $n$}       & Número de horas de atividades curriculares obrigatórias para o período $n$. \\
+        \texttt{opcional}              & Número de horas total de atividades curriculares opcionais.                 \\
+        \texttt{opcional $n$}          & Número de horas de atividades curriculares opcionais para o período $n$.    \\
+        \texttt{eletiva}               & Número total de atividades curriculares definidas como eletivas.            \\
+        \texttt{teórica}               & Número de horas teóricas total.                                             \\
+        \texttt{prática}               & Número de horas práticas total.                                             \\
+        \texttt{extensionista}         & Número de horas extensionistas total.                                       \\
+        \texttt{estágio}               & Número de horas de estágio total.                                           \\
+    \end{tabular}
+
+    \bigskip
     O \Argument{texto-adicional}, que é opcional, é o texto que será colocado logo após o número de horas. Pode ser, por exemplo, ``\Macro{,}h'' ou ``\PDTilde horas''.
 
     Caso a macro seja ``estrelada'' (\Macro{PPCCargaHoraria*}), se o número de horas for igual a zero, nada é apresentado. O \Argument{texto-adicional} também é omitido neste caso.
@@ -437,6 +445,12 @@ Os diversos atributos podem ser, ainda, manipulados conforme descrito no pacote 
 
 \begin{Macrodef}{PPCArea}{\OArg{nome-matriz}\MArg{id-da-área}\MArg{atributo}}{}
     \Macro{PPCArea} recupera uma informação de área \Argument{id-da-área} definida em uma matriz curricular (atualmente, apenas \PDInline{nome} está disponível).
+
+    O \Argument{nome-matriz} pode ser usado caso mais de uma matriz seja criada.
+\end{Macrodef}
+
+\begin{Macrodef}{PPCEixo}{\OArg{nome-matriz}\MArg{id-do-eixo}\MArg{atributo}}{}
+    \Macro{PPCEixo} recupera uma informação de eixo \Argument{id-do-eixo} definida em uma matriz curricular (atualmente, apenas \PDInline{nome} está disponível).
 
     O \Argument{nome-matriz} pode ser usado caso mais de uma matriz seja criada.
 \end{Macrodef}
@@ -531,7 +545,6 @@ Várias listas são criadas com os dados fornecidos e estão apresentadas na \Cr
     % Ordena as disciplinas da matriz curricular por nome
     \PPCOrdeneAtividades{matriz-curricular-atividades}{nome}
 \end{PDListing}
-
 
 
 \section{Informações padronizadas}
