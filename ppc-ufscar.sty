@@ -403,6 +403,10 @@
         \ppc_defina_carga_horaria:n { total }
         \ppc_defina_carga_horaria:n { obrigatória }
         \ppc_defina_carga_horaria:n { optativa }
+        \ppc_defina_carga_horaria:n { teórica }
+        \ppc_defina_carga_horaria:n { prática }
+        \ppc_defina_carga_horaria:n { extensionista }
+        \ppc_defina_carga_horaria:n { estágio }
         \int_set:Nn \l_tmpa_int { 0 }  % contador
         \int_while_do:nNnn { \l_tmpa_int } { < } { #1 } {  % para cada período
             \int_add:Nn \l_tmpa_int { 1 }
@@ -433,9 +437,9 @@
     eletivas .code:n = {
         \ppc_defina_atividades_eletivas:n { #1 }
     },
-% carga~para~deduzir .code:n = {
-%     \ppc_defina_carga_para_deduzir:n { #1 }
-% },
+    % carga~para~deduzir .code:n = {
+    %     \ppc_defina_carga_para_deduzir:n { #1 }
+    % },
 }
 \cs_new:Npn \ppc_defina_matriz_curricular:nn #1#2 {
     \tl_clear_new:N \l_ppc_matriz_corrente_tl
@@ -574,13 +578,18 @@
         \seq_clear_new:N \l_ppc_lista_atividades_seq
         \seq_set_split:Nnn \l_ppc_lista_atividades_seq { , } { #2 }
         \seq_map_inline:Nn \l_ppc_lista_atividades_seq {
-            \ppc_se_for_adicao_de_horas:nTF { ##1 } {
+            \ppc_se_for_adicao_de_horas:nTF { ##1 } {  % e.g.: +360
                 \ppc_some_carga_horaria:nn { obrigatória } { ##1 }
                 \ppc_some_carga_horaria:nn { total~#1 } { ##1 }
                 \ppc_some_carga_horaria:nn { obrigatória~#1 } { ##1 }
             }{
                 \ppc_obtenha_id_atividade:Nn \l_ppc_atividade_tl { ##1 }
                 \ppc_obtenha_carga_atividade:Nn \l_ppc_carga_da_atividade_int { \l_ppc_atividade_tl }
+                \PackageWarning{xxx}{\tl_use:N \l_ppc_atividade_tl}
+                \ppc_some_carga_horaria:nn { teórica } { \tl_use:c { g_at_ \tl_use:N \l_ppc_atividade_tl _ horas~teóricas _tl } }
+                \ppc_some_carga_horaria:nn { prática } { \tl_use:c { g_at_ \tl_use:N \l_ppc_atividade_tl _ horas~práticas _tl } }
+                \ppc_some_carga_horaria:nn { extensionista } { \tl_use:c { g_at_ \tl_use:N \l_ppc_atividade_tl _ horas~extensionistas _tl } }
+                \ppc_some_carga_horaria:nn { estágio } { \tl_use:c { g_at_ \tl_use:N \l_ppc_atividade_tl _ horas~estágio _tl } }
                 \ppc_caso_carater:nnn { ##1 } {  % obrigatório
                     \PPCDefinaAtividade{\l_ppc_atividade_tl}{caráter = Obrigatório}
                     \bool_if:NTF \l_pcc_contabiliza_carga_atividade_bool {
