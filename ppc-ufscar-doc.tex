@@ -313,8 +313,10 @@ O curso é organizado por períodos letivos. No exemplo, é definido um curso de
 
 O texto ``trimestre'' é usado na apresentação das tabelas de atividades curriculares por trimestre apenas.
 
-\subsubsection{Áreas}
-O curso é organizado em quatro grandes áreas: Terra, Fogo, Água e Ar.
+\subsubsection{Áreas e Eixos}
+\index{área}
+\index{eixo}
+O curso é organizado em quatro grandes \textbf{áreas}: Terra, Fogo, Água e Ar.
 
 Para a área da água, seu identificador é \PDInline{hidro} e seu \PDInline{nome} é ``Ciências da Água''. Essa área não possui atividades curriculares nos trimestres 1, 4, 6 ou 8, mas tem duas atividades curriculares no segundo trimestre, uma no terceiro, três no quinto e uma no sétimo.
 
@@ -327,6 +329,8 @@ Para a área da água, seu identificador é \PDInline{hidro} e seu \PDInline{nom
         7 = {ocean-fis},
     },
 \end{PDListing}
+
+No lugar de \PDInline{área}, o termo \PDInline{eixo} também pode ser usado, sendo apenas um \textit{alias} (ver \MacroRef{PPCArea} e \MacroRef{PPCEixo}).
 
 \index{optativas}
 \index{atividades curriculares!optativas}
@@ -593,7 +597,9 @@ Para as apresentações de dados, o ambiente \EnvironmentDef{quadro} é disponib
 \subsection{Opções para as informações padronizadas}
 
 \subsubsection{Capa, dados institucionais e ficha da disciplina}
+%! parser = off
 Quando o documento é criado usando a classe \PDInline{ppc-ufscar} (com \Macro{documentclass}\PArg{ppc-ufscar}), as folhas de capa, dos dados institucionais e da ficha descritiva são automaticamente criados. Estas opções devem ser especificadas ainda no preâmbulo do documento (antes de \PDInline{\begin{document}}).
+%! parser = on
 
 Essas opções são definidas com \Macro{PPCConfig}.
 
