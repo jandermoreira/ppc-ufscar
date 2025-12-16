@@ -33,6 +33,10 @@
     cor~texto~optativa .code:n = {\colorlet{cor~texto~optativa}{#1}},
     cor~horas~optativa .code:n = {\colorlet{cor~horas~optativa}{#1}},
     cor~gradiente~optativa.code:n = {\colorlet{cor~gradiente~optativa}{#1}},
+    cor~fundo~complementar .code:n = {\colorlet{cor~caixa~complementar}{#1}},
+    cor~texto~complementar .code:n = {\colorlet{cor~texto~complementar}{#1}},
+    cor~horas~complementar .code:n = {\colorlet{cor~horas~complementar}{#1}},
+    cor~gradiente~complementar.code:n = {\colorlet{cor~gradiente~complementar}{#1}},
     cor~fundo~área .code:n = {\colorlet{cor~fundo~área}{#1}},
     cor~texto~período .code:n = {\colorlet{cor~texto~período}{#1}},
     cor~fundo~período .code:n = {\colorlet{cor~fundo~período}{#1}},
@@ -63,7 +67,11 @@
     cor fundo optativa = teal!40,
     cor texto optativa = black,
     cor horas optativa = black,
-    cor gradiente optativa = teal!10,
+    cor gradiente optativa = orange!30!brown!10,
+    cor fundo complementar = orange!30!brown!40,
+    cor texto complementar = black,
+    cor horas complementar = black,
+    cor gradiente complementar = orange!30!brown!10,
     cor fundo área = black!10,
     cor texto período = blue!20!black,
     cor fundo período = cyan!80!black!40,
@@ -185,7 +193,7 @@
     nome = {Atividades Complementares (210\,h)},
     objetivo = {},
     ementa = {},
-    caráter = Optativo,
+    caráter = Complementar,
     pré-requisitos = {},
     horas teóricas = 0,
     horas práticas = 0,
@@ -213,8 +221,15 @@
             \colorlet{cor horas}{cor horas optativa}%
             \colorlet{cor gradiente}{cor gradiente optativa}%
         }{%
-            \ATAttributeGetTo[#1]{\ppg@local@Carater}{caráter}
-            \PackageError{ppc-ufscar}{Caráter inválido para #1 (\ppg@local@Carater); válidos: obrigatório ou optativo.}
+            \ATAttributeIfEqual[#1]{caráter}{Complementar}{%
+                \colorlet{cor caixa}{cor caixa complementar}%
+                \colorlet{cor texto}{cor texto complementar}%
+                \colorlet{cor horas}{cor horas complementar}%
+                \colorlet{cor gradiente}{cor gradiente complementar}%
+            }{%
+                \ATAttributeGetTo[#1]{\ppg@local@Carater}{caráter}
+                \PackageError{ppc-ufscar}{Caráter inválido para #1 (\ppg@local@Carater); válidos: obrigatório ou optativo.}
+            }%
         }%
     }%
     \begin{tikzpicture}
