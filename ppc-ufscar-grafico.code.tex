@@ -171,6 +171,23 @@
     competências = {},
 }
 
+\PPCDefinaAtividade{ppc@complementar-fantasma}{
+    código = {},
+    nome = {Atividades Complementares (210\,h)},
+    objetivo = {},
+    ementa = {},
+    caráter = Optativo,
+    pré-requisitos = {},
+    horas teóricas = 0,
+    horas práticas = 0,
+    horas extensionistas = 0,
+    horas estágio = 0,
+    departamento = {},
+    bibliografia básica = {},
+    bibliografia complementar = {},
+    competências = {},
+}
+
 
 % ppc@CaixaAtividade: desenha a caixa da atividade
 % #1: id da atividade
@@ -342,14 +359,33 @@
             }{
                 \coordinate (referência) at (0, 0);
             }
-            \PPCIf{VisaoDoAluno}{
-                \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{periodo}};
-            }{
-                \ATListForEach{#1-áreas}{\area}{
-                    \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{\area}};
-                    \coordinate (referência) at ($(área.north east) + (\ppc@SeparacaoCaixasAtividade, 0)$);
-                }
-            }
+            \node[caixa de área] at (referência) (caixa matriz completa) {%
+                \begin{tikzpicture}%
+                    \PPCIf{VisaoDoAluno}{%
+                        \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{periodo}};%
+                    }{%
+                        \ATListForEach{#1-áreas}{\area}{%
+                            \node[caixa de área] at (referência) (área) {\ppc@CaixaArea[#1]{\area}};%
+                            \coordinate (referência) at ($(área.north east) + (\ppc@SeparacaoCaixasAtividade, 0)$);%
+                        }%
+                    }
+                \end{tikzpicture}%
+            };
+            % \draw[blue] ($(caixa matriz completa.south west) + (-2\ppc@SeparacaoCaixasAtividade, \ppc@SeparacaoCaixasAtividade)$) circle (2pt);
+            % \draw[blue] ($(caixa matriz completa.south west) + (-2\ppc@SeparacaoCaixasAtividade, \ppc@SeparacaoCaixasAtividade)$) circle (0.2pt);
+            % \draw[blue] ($(caixa matriz completa.south west) + (\ppc@SeparacaoCaixasAtividade, \ppc@SeparacaoCaixasAtividade)$) circle (2pt);
+            % \draw[blue] ($(caixa matriz completa.south west) + (\ppc@SeparacaoCaixasAtividade, \ppc@SeparacaoCaixasAtividade)$) circle (0.2pt);
+            \PPCIf{#1-PossuiComplementar} {
+                \draw[caixa de área, fill = black!10, draw = none] ($(caixa matriz completa.south west) + (0, -\ppc@SeparacaoCaixasAtividade)$)
+                rectangle
+                ($(caixa matriz completa.south east) + (0, -3\ppc@SeparacaoCaixasAtividade - \ppc@AlturaCaixaAtividade)$);
+                \begingroup
+                \PPCGraficos{mostra total atividade = false}
+                \node[caixa de área] at ($(caixa matriz completa.south west) + (\ppc@SeparacaoCaixasAtividade, -2\ppc@SeparacaoCaixasAtividade)$) {%
+                    \ppc@CaixaAtividade{ppc@complementar-fantasma}%
+                };
+                \endgroup
+            }{}
         \end{tikzpicture}
     }
 }
