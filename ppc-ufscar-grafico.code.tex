@@ -53,7 +53,7 @@
 % Configuração padrão para os gráficos
 \PPCGraficos{
     largura caixa = 4cm,
-    altura caixa = 2.5cm,
+    altura caixa = 2.8cm,
     altura nome área = 3.5\ppc@BaselineSkip,
     separação = 0.2cm,
     cor fundo obrigatória = blue!40,
@@ -129,11 +129,20 @@
         font = \ppc@FonteHoras,
         text = cor horas,
     },
+    horas totais/.style = {
+        horas,
+        text width = 0.3\ppc@LarguraCaixaAtividade,
+        anchor = south east,
+        text = cor texto,
+        scale = 0.95,
+        align = right,
+        inner xsep = 0.1cm,
+    },
     prefixo/.style = {
         todos nós,
         inner sep = 0.1pt,
         anchor = north west,
-        text = cor horas,
+        text = cor horas!90,
         font = \ppc@FonteTexto\tiny,
     },
     teóricas/.style = {fill = cor caixa!80!cor gradiente},
@@ -221,7 +230,7 @@
         }
         \ppc@ObtenhaCargaAtividade{\ppc@local@Carga}{#1}
         \PPCIf{MostraTotal}{
-            \node[horas, anchor = south west, text = cor texto, scale = 0.95, align = right, inner xsep = 0.1cm] at (ultima hora.north west) (ultima hora) {\ppc@local@Carga h};
+            \node[horas totais] at (ultima hora.north east) (ultima hora) {\ppc@local@Carga\,h};
         }{}
         % \node[prefixo] at (ultima hora.north west) {Tot:};
     \end{tikzpicture}%
